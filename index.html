@@ -526,7 +526,7 @@
             const cashPayment = parseFloat(document.getElementById('cashPayment').value) || 0;
             const saleName = document.getElementById('saleName').value;
 
-            const notification = `${roomSymbol} $91HXH ${months}t( ${checkInDate}-${checkOutDate}) giá ${formatCurrency(monthlyPrice)}tr Cọc 1tt1 Cọc trước ${formatCurrency(deposit)}tr Tổng thanh toán: ${formatCurrency(advancePayment)}tr ttck và ${formatCurrency(cashPayment)}tr tttm Sale ${saleName}`;
+            const notification = `${roomSymbol} 91HXH ${months}t(${checkInDate}-${checkOutDate}) giá ${formatCurrency(monthlyPrice)}tr Cọc 1tt1 Cọc trước ${formatCurrency(deposit)}tr Tổng thanh toán: ${formatCurrency(advancePayment)}tr ttck và ${formatCurrency(cashPayment)}tr tttm Sale ${saleName}`;
 
             return notification;
         }
