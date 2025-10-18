@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Phòng Khách Sạn</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.38.4/supabase.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .price-info {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .price-item:last-child {
+            margin-bottom: 0;
+            padding-top: 10px;
+            border-top: 2px solid #ddd;
+            font-weight: 700;
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .price-label {
+            color: #666;
+        }
+
+        .price-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .bookings-list {
+            margin-top: 40px;
+            border-top: 2px solid #f0f0f0;
+            padding-top: 30px;
+        }
+
+        .booking-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border-left: 4px solid #667eea;
+        }
+
+        .booking-item p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏨 Đặt Phòng Khách Sạn</h1>
+
+        <form id="bookingForm">
+            <div class="form-group">
+                <label for="customerName">Tên Khách Hàng</label>
+                <input type="text" id="customerName" placeholder="Nhập tên khách hàng" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="checkInDate">Ngày Vào</label>
+                    <input type="date" id="checkInDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="months">Số Tháng Ở</label>
+                    <input type="number" id="months" min="1" placeholder="VD: 1, 2, 3..." value="1" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="roomNumber">Số Phòng</label>
+                <select id="roomNumber" required>
+                    <option value="">-- Chọn số phòng --</option>
+                    <option value="101">Phòng 101</option>
+                    <option value="102">Phòng 102</option>
+                    <option value="103">Phòng 103</option>
+                    <option value="201">Phòng 201</option>
+                    <option value="202">Phòng 202</option>
+                    <option value="301">Phòng 301</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="pricePerMonth">Giá Phòng (VNĐ/tháng)</label>
+                <input type="number" id="pricePerMonth" placeholder="VD: 5000000" value="5000000" required>
+            </div>
+
+            <div class="price-info">
+                <div class="price-item">
+                    <span class="price-label">Giá/tháng:</span>
+                    <span class="price-value" id="monthlyPrice">5.000.000</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-label">Số tháng:</span>
+                    <span class="price-value" id="monthsDisplay">1</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-label">Tổng cộng:</span>
+                    <span class="price-value" id="totalPrice">5.000.000</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-submit">💾 Lưu Đặt Phòng</button>
+                <button type="reset" class="btn-reset">🔄 Làm Mới</button>
+            </div>
+
+            <div id="message"></div>
+        </form>
+
+        <div class="bookings-list" id="bookingsList" style="display: none;">
+            <h2 style="color: #333; margin-bottom: 15px;">Danh Sách Đặt Phòng</h2>
+            <div id="bookingsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Cấu hình Supabase
+        const SUPABASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
+
+        // Lưu ý: Thay YOUR_PROJECT_ID và YOUR_ANON_KEY bằng thông tin thực tế của bạn
+
+        let supabase;
+
+        // Khởi tạo Supabase
+        function initSupabase() {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        // Định dạng số tiền
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND' 
+            }).format(num).replace('₫', '').trim();
+        }
+
+        // Cập nhật tính toán giá
+        function updatePriceCalculation() {
+            const pricePerMonth = parseFloat(document.getElementById('pricePerMonth').value) || 0;
+            const months = parseInt(document.getElementById('months').value) || 0;
+            const total = pricePerMonth * months;
+
+            document.getElementById('monthlyPrice').textContent = formatCurrency(pricePerMonth);
+            document.getElementById('monthsDisplay').textContent = months;
+            document.getElementById('totalPrice').textContent = formatCurrency(total);
+        }
+
+        // Sự kiện thay đổi giá và số tháng
+        document.getElementById('pricePerMonth').addEventListener('change', updatePriceCalculation);
+        document.getElementById('months').addEventListener('change', updatePriceCalculation);
+        document.getElementById('months').addEventListener('input', updatePriceCalculation);
+
+        // Xử lý submit form
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const messageEl = document.getElementById('message');
+            messageEl.innerHTML = '';
+
+            try {
+                if (!SUPABASE_URL.includes('bwlrhewncykjvvjcwipu')) {
+                    messageEl.className = 'message error';
+                    messageEl.textContent = '⚠️ Vui lòng cấu hình Supabase URL và API Key';
+                    return;
+                }
+
+                if (!supabase) {
+                    initSupabase();
+                }
+
+                const booking = {
+                    customer_name: document.getElementById('customerName').value,
+                    check_in_date: document.getElementById('checkInDate').value,
+                    months_stay: parseInt(document.getElementById('months').value),
+                    room_number: document.getElementById('roomNumber').value,
+                    price_per_month: parseFloat(document.getElementById('pricePerMonth').value),
+                    total_price: parseFloat(document.getElementById('pricePerMonth').value) * parseInt(document.getElementById('months').value),
+                    created_at: new Date().toISOString()
+                };
+
+                const { data, error } = await supabase
+                    .from('bookings')
+                    .insert([booking]);
+
+                if (error) throw error;
+
+                messageEl.className = 'message success';
+                messageEl.textContent = '✅ Đặt phòng thành công!';
+                
+                document.getElementById('bookingForm').reset();
+                updatePriceCalculation();
+                
+                loadBookings();
+
+            } catch (error) {
+                messageEl.className = 'message error';
+                messageEl.textContent = `❌ Lỗi: ${error.message}`;
+                console.error('Error:', error);
+            }
+        });
+
+        // Tải danh sách đặt phòng
+        async function loadBookings() {
+            try {
+                if (!supabase || SUPABASE_URL.includes('bwlrhewncykjvvjcwipu')) return;
+
+                const { data, error } = await supabase
+                    .from('bookings')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const container = document.getElementById('bookingsContainer');
+                const list = document.getElementById('bookingsList');
+
+                if (data && data.length > 0) {
+                    list.style.display = 'block';
+                    container.innerHTML = data.map(booking => `
+                        <div class="booking-item">
+                            <p><strong>${booking.customer_name}</strong></p>
+                            <p>Phòng: ${booking.room_number} | Vào: ${booking.check_in_date}</p>
+                            <p>Thời gian: ${booking.months_stay} tháng | Tổng: ${formatCurrency(booking.total_price)}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    list.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+            }
+        }
+
+        // Khởi tạo khi trang tải
+        window.addEventListener('load', () => {
+            updatePriceCalculation();
+            initSupabase();
+            loadBookings();
+        });
+    </script>
+</body>
+</html>
