@@ -26,7 +26,7 @@
             background: white;
             border-radius: 15px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
             padding: 40px;
         }
@@ -72,37 +72,21 @@
             gap: 20px;
         }
 
-        .price-info {
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .section-title {
             background: #f5f5f5;
+            padding: 12px 15px;
+            margin: 25px 0 15px 0;
             border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
             border-left: 4px solid #667eea;
-        }
-
-        .price-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .price-item:last-child {
-            margin-bottom: 0;
-            padding-top: 10px;
-            border-top: 2px solid #ddd;
-            font-weight: 700;
-            font-size: 16px;
-            color: #667eea;
-        }
-
-        .price-label {
-            color: #666;
-        }
-
-        .price-value {
-            color: #333;
             font-weight: 600;
+            color: #333;
+            font-size: 14px;
         }
 
         .button-group {
@@ -141,6 +125,93 @@
             background: #e0e0e0;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .modal-body {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #333;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-copy {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-close {
+            flex: 1;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-close:hover {
+            background: #e0e0e0;
+        }
+
         .message {
             padding: 15px;
             border-radius: 8px;
@@ -161,28 +232,8 @@
             border: 1px solid #f5c6cb;
         }
 
-        .bookings-list {
-            margin-top: 40px;
-            border-top: 2px solid #f0f0f0;
-            padding-top: 30px;
-        }
-
-        .booking-item {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            border-left: 4px solid #667eea;
-        }
-
-        .booking-item p {
-            margin: 5px 0;
-            color: #555;
-        }
-
         @media (max-width: 600px) {
-            .form-row {
+            .form-row, .form-row-3 {
                 grid-template-columns: 1fr;
             }
 
@@ -193,75 +244,102 @@
             h1 {
                 font-size: 22px;
             }
+
+            .modal-content {
+                width: 95%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏨 Đặt Phòng Khách Sạn</h1>
+        <h1>🏨 HỢP ĐỒNG THUÊ PHÒNG</h1>
 
         <form id="bookingForm">
-            <div class="form-group">
-                <label for="customerName">Tên Khách Hàng</label>
-                <input type="text" id="customerName" placeholder="Nhập tên khách hàng" required>
+            <div class="section-title">📋 THÔNG TIN PHÒNG</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="roomSymbol">Ký Hiệu Phòng (VD: P902)</label>
+                    <input type="text" id="roomSymbol" placeholder="VD: P902, P903..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="months">Số Tháng Thuê</label>
+                    <input type="number" id="months" min="1" placeholder="VD: 3, 6, 12..." value="1" required>
+                </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="checkInDate">Ngày Vào</label>
-                    <input type="date" id="checkInDate" required>
+                    <label for="checkInDate">Ngày Vào (DD/MM)</label>
+                    <input type="text" id="checkInDate" placeholder="VD: 16/10" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="months">Số Tháng Ở</label>
-                    <input type="number" id="months" min="1" placeholder="VD: 1, 2, 3..." value="1" required>
+                    <label for="checkOutDate">Ngày Ra (DD/MM/YYYY)</label>
+                    <input type="text" id="checkOutDate" placeholder="VD: 15/02/2026" required>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="roomNumber">Số Phòng</label>
-                <select id="roomNumber" required>
-                    <option value="">-- Chọn số phòng --</option>
-                    <option value="101">Phòng 101</option>
-                    <option value="102">Phòng 102</option>
-                    <option value="103">Phòng 103</option>
-                    <option value="201">Phòng 201</option>
-                    <option value="202">Phòng 202</option>
-                    <option value="301">Phòng 301</option>
-                </select>
+            <div class="section-title">💰 THÔNG TIN GIÁ CẢ</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="monthlyPrice">Giá Hàng Tháng (VNĐ)</label>
+                    <input type="number" id="monthlyPrice" placeholder="VD: 3300000" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="deposit">Tiền Cọc (VNĐ)</label>
+                    <input type="number" id="deposit" placeholder="VD: 1000000" value="0" required>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="pricePerMonth">Giá Phòng (VNĐ/tháng)</label>
-                <input type="number" id="pricePerMonth" placeholder="VD: 5000000" value="5000000" required>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="advancePayment">Thanh Toán Trước (VNĐ) - ttck</label>
+                    <input type="number" id="advancePayment" placeholder="VD: 1600000" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cashPayment">Thanh Toán Tiền Mặt (VNĐ) - tttm</label>
+                    <input type="number" id="cashPayment" placeholder="VD: 4000000" value="0" required>
+                </div>
             </div>
 
-            <div class="price-info">
-                <div class="price-item">
-                    <span class="price-label">Giá/tháng:</span>
-                    <span class="price-value" id="monthlyPrice">5.000.000</span>
+            <div class="section-title">👤 THÔNG TIN KHÁC</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="customerName">Tên Khách Hàng</label>
+                    <input type="text" id="customerName" placeholder="Nhập tên khách hàng" required>
                 </div>
-                <div class="price-item">
-                    <span class="price-label">Số tháng:</span>
-                    <span class="price-value" id="monthsDisplay">1</span>
-                </div>
-                <div class="price-item">
-                    <span class="price-label">Tổng cộng:</span>
-                    <span class="price-value" id="totalPrice">5.000.000</span>
+
+                <div class="form-group">
+                    <label for="saleName">Tên Người Sale</label>
+                    <input type="text" id="saleName" placeholder="Nhập tên người sale" required>
                 </div>
             </div>
 
             <div class="button-group">
-                <button type="submit" class="btn-submit">💾 Lưu Đặt Phòng</button>
+                <button type="submit" class="btn-submit">💾 Lưu & Tạo Thông Báo</button>
                 <button type="reset" class="btn-reset">🔄 Làm Mới</button>
             </div>
 
             <div id="message"></div>
         </form>
+    </div>
 
-        <div class="bookings-list" id="bookingsList" style="display: none;">
-            <h2 style="color: #333; margin-bottom: 15px;">Danh Sách Đặt Phòng</h2>
-            <div id="bookingsContainer"></div>
+    <!-- Modal thông báo -->
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">✅ Hợp Đồng Được Lưu</div>
+            <div class="modal-body" id="notificationText"></div>
+            <div class="modal-buttons">
+                <button class="btn-copy" onclick="copyToClipboard()">📋 Sao Chép</button>
+                <button class="btn-close" onclick="closeModal()">Đóng</button>
+            </div>
         </div>
     </div>
 
@@ -270,40 +348,34 @@
         const SUPABASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
 
-        // Lưu ý: Thay YOUR_PROJECT_ID và YOUR_ANON_KEY bằng thông tin thực tế của bạn
-
         let supabase;
+        let lastNotificationText = '';
 
-        // Khởi tạo Supabase
         function initSupabase() {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
 
-        // Định dạng số tiền
-        function formatCurrency(num) {
-            return new Intl.NumberFormat('vi-VN', { 
-                style: 'currency', 
-                currency: 'VND' 
-            }).format(num).replace('₫', '').trim();
+        function formatNumber(num) {
+            return Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
-        // Cập nhật tính toán giá
-        function updatePriceCalculation() {
-            const pricePerMonth = parseFloat(document.getElementById('pricePerMonth').value) || 0;
-            const months = parseInt(document.getElementById('months').value) || 0;
-            const total = pricePerMonth * months;
+        function generateNotification() {
+            const roomSymbol = document.getElementById('roomSymbol').value;
+            const months = document.getElementById('months').value;
+            const checkInDate = document.getElementById('checkInDate').value;
+            const checkOutDate = document.getElementById('checkOutDate').value;
+            const monthlyPrice = parseInt(document.getElementById('monthlyPrice').value) || 0;
+            const deposit = parseInt(document.getElementById('deposit').value) || 0;
+            const advancePayment = parseInt(document.getElementById('advancePayment').value) || 0;
+            const cashPayment = parseInt(document.getElementById('cashPayment').value) || 0;
+            const customerName = document.getElementById('customerName').value;
+            const saleName = document.getElementById('saleName').value;
 
-            document.getElementById('monthlyPrice').textContent = formatCurrency(pricePerMonth);
-            document.getElementById('monthsDisplay').textContent = months;
-            document.getElementById('totalPrice').textContent = formatCurrency(total);
+            const notification = `${roomSymbol} ${saleName}HXH ${months}t( ${checkInDate}-${checkOutDate}) giá ${formatNumber(monthlyPrice)} Cọc 1t+1 Cọc trước ${formatNumber(deposit)} Tổng thanh toán: ${formatNumber(advancePayment)} ttck và ${formatNumber(cashPayment)} tttm Sale ${saleName}`;
+
+            return notification;
         }
 
-        // Sự kiện thay đổi giá và số tháng
-        document.getElementById('pricePerMonth').addEventListener('change', updatePriceCalculation);
-        document.getElementById('months').addEventListener('change', updatePriceCalculation);
-        document.getElementById('months').addEventListener('input', updatePriceCalculation);
-
-        // Xử lý submit form
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -311,39 +383,42 @@
             messageEl.innerHTML = '';
 
             try {
+                // Tạo thông báo
+                lastNotificationText = generateNotification();
+
+                // Lưu vào Supabase (nếu cấu hình)
                 if (!SUPABASE_URL.includes('bwlrhewncykjvvjcwipu')) {
-                    messageEl.className = 'message error';
-                    messageEl.textContent = '⚠️ Vui lòng cấu hình Supabase URL và API Key';
-                    return;
+                    try {
+                        if (!supabase) {
+                            initSupabase();
+                        }
+
+                        const booking = {
+                            room_symbol: document.getElementById('roomSymbol').value,
+                            customer_name: document.getElementById('customerName').value,
+                            check_in_date: document.getElementById('checkInDate').value,
+                            check_out_date: document.getElementById('checkOutDate').value,
+                            months_stay: parseInt(document.getElementById('months').value),
+                            monthly_price: parseFloat(document.getElementById('monthlyPrice').value),
+                            deposit: parseFloat(document.getElementById('deposit').value),
+                            advance_payment: parseFloat(document.getElementById('advancePayment').value),
+                            cash_payment: parseFloat(document.getElementById('cashPayment').value),
+                            sale_name: document.getElementById('saleName').value,
+                            notification_text: lastNotificationText,
+                            created_at: new Date().toISOString()
+                        };
+
+                        await supabase.from('bookings').insert([booking]);
+                    } catch (error) {
+                        console.log('Supabase chưa cấu hình, nhưng thông báo vẫn được tạo');
+                    }
                 }
 
-                if (!supabase) {
-                    initSupabase();
-                }
+                // Hiện modal
+                document.getElementById('notificationText').textContent = lastNotificationText;
+                document.getElementById('notificationModal').classList.add('show');
 
-                const booking = {
-                    customer_name: document.getElementById('customerName').value,
-                    check_in_date: document.getElementById('checkInDate').value,
-                    months_stay: parseInt(document.getElementById('months').value),
-                    room_number: document.getElementById('roomNumber').value,
-                    price_per_month: parseFloat(document.getElementById('pricePerMonth').value),
-                    total_price: parseFloat(document.getElementById('pricePerMonth').value) * parseInt(document.getElementById('months').value),
-                    created_at: new Date().toISOString()
-                };
-
-                const { data, error } = await supabase
-                    .from('bookings')
-                    .insert([booking]);
-
-                if (error) throw error;
-
-                messageEl.className = 'message success';
-                messageEl.textContent = '✅ Đặt phòng thành công!';
-                
                 document.getElementById('bookingForm').reset();
-                updatePriceCalculation();
-                
-                loadBookings();
 
             } catch (error) {
                 messageEl.className = 'message error';
@@ -352,44 +427,31 @@
             }
         });
 
-        // Tải danh sách đặt phòng
-        async function loadBookings() {
-            try {
-                if (!supabase || SUPABASE_URL.includes('bwlrhewncykjvvjcwipu')) return;
-
-                const { data, error } = await supabase
-                    .from('bookings')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                const container = document.getElementById('bookingsContainer');
-                const list = document.getElementById('bookingsList');
-
-                if (data && data.length > 0) {
-                    list.style.display = 'block';
-                    container.innerHTML = data.map(booking => `
-                        <div class="booking-item">
-                            <p><strong>${booking.customer_name}</strong></p>
-                            <p>Phòng: ${booking.room_number} | Vào: ${booking.check_in_date}</p>
-                            <p>Thời gian: ${booking.months_stay} tháng | Tổng: ${formatCurrency(booking.total_price)}</p>
-                        </div>
-                    `).join('');
-                } else {
-                    list.style.display = 'none';
-                }
-
-            } catch (error) {
-                console.error('Error loading bookings:', error);
-            }
+        function copyToClipboard() {
+            navigator.clipboard.writeText(lastNotificationText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Đã Sao Chép!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
         }
 
-        // Khởi tạo khi trang tải
+        function closeModal() {
+            document.getElementById('notificationModal').classList.remove('show');
+        }
+
         window.addEventListener('load', () => {
-            updatePriceCalculation();
             initSupabase();
-            loadBookings();
+        });
+
+        // Đóng modal khi click ngoài
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('notificationModal');
+            if (e.target === modal) {
+                closeModal();
+            }
         });
     </script>
 </body>
