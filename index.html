@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt Phòng Khách Sạn</title>
+    <title>Quản Lý Khách Sạn</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.38.4/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,10 +16,68 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .config-alert {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .wrapper {
@@ -26,7 +85,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             max-width: 1400px;
-            width: 100%;
+            margin: 0 auto;
         }
 
         .container {
@@ -37,7 +96,7 @@
         }
 
         .form-section {
-            max-height: 90vh;
+            max-height: 80vh;
             overflow-y: auto;
             padding-right: 10px;
         }
@@ -46,27 +105,16 @@
             width: 6px;
         }
 
-        .form-section::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
         .form-section::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 10px;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 28px;
-        }
-
         h2 {
             color: #333;
             margin-bottom: 20px;
-            font-size: 20px;
+            font-size: 24px;
+            text-align: center;
         }
 
         .form-group {
@@ -81,7 +129,7 @@
             font-size: 14px;
         }
 
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
@@ -91,7 +139,7 @@
             font-family: inherit;
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -150,94 +198,26 @@
             background: #e0e0e0;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal.show {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            font-size: 18px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 15px;
-        }
-
-        .modal-body {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 15px;
-            line-height: 1.8;
-            color: #333;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-copy {
-            flex: 1;
+        .message {
             padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
             border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
         }
 
-        .btn-copy:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
-        .btn-close {
-            flex: 1;
-            padding: 12px;
-            background: #f0f0f0;
-            color: #333;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
 
-        .btn-close:hover {
-            background: #e0e0e0;
-        }
-
-        /* Danh sách thông báo */
         .history-container {
             background: white;
             border-radius: 15px;
@@ -258,17 +238,12 @@
             width: 6px;
         }
 
-        .history-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
         .history-list::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 10px;
         }
 
-        .notification-item {
+        .item {
             background: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
@@ -277,29 +252,28 @@
             font-size: 13px;
             line-height: 1.6;
             color: #555;
-            font-family: 'Courier New', monospace;
             word-break: break-word;
             position: relative;
             transition: all 0.3s;
         }
 
-        .notification-item:hover {
+        .item:hover {
             background: #f0f0f0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .notification-time {
+        .item-time {
             font-size: 11px;
             color: #999;
             margin-top: 8px;
             font-style: italic;
         }
 
-        .btn-item-copy {
+        .btn-item-delete {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: #667eea;
+            background: #dc3545;
             color: white;
             border: none;
             padding: 6px 12px;
@@ -310,12 +284,12 @@
             transition: opacity 0.3s;
         }
 
-        .notification-item:hover .btn-item-copy {
+        .item:hover .btn-item-delete {
             opacity: 1;
         }
 
-        .btn-item-copy:hover {
-            background: #764ba2;
+        .btn-item-delete:hover {
+            background: #c82333;
         }
 
         .btn-clear-all {
@@ -328,7 +302,6 @@
             cursor: pointer;
             font-weight: 600;
             margin-top: auto;
-            transition: all 0.3s;
         }
 
         .btn-clear-all:hover {
@@ -342,17 +315,15 @@
             font-style: italic;
         }
 
+        .loading {
+            text-align: center;
+            color: #667eea;
+            padding: 20px;
+        }
+
         @media (max-width: 1200px) {
             .wrapper {
                 grid-template-columns: 1fr;
-            }
-
-            .container, .history-container {
-                padding: 30px;
-            }
-
-            h1 {
-                font-size: 24px;
             }
         }
 
@@ -360,123 +331,243 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
-
-            .container, .history-container {
-                padding: 20px;
-            }
-
-            h1, h2 {
-                font-size: 18px;
-            }
-
-            .wrapper {
-                gap: 15px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <!-- Form Section -->
-        <div class="container">
-            <h1>🏨 HỢP ĐỒNG THUÊ PHÒNG</h1>
-
-            <form id="bookingForm" class="form-section">
-                <div class="section-title">📋 THÔNG TIN PHÒNG</div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="roomSymbol">Ký Hiệu Phòng (VD: P902)</label>
-                        <input type="text" id="roomSymbol" placeholder="VD: P902, P903..." required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="months">Số Tháng Thuê</label>
-                        <input type="number" id="months" min="1" placeholder="VD: 3, 6, 12..." value="1" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="checkInDate">Ngày Vào (DD/MM)</label>
-                        <input type="text" id="checkInDate" placeholder="VD: 16/10" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="checkOutDate">Ngày Ra (Tự Động)</label>
-                        <input type="text" id="checkOutDate" placeholder="Tự động tính" readonly style="background: #f5f5f5;">
-                    </div>
-                </div>
-
-                <div class="section-title">💰 THÔNG TIN GIÁ CẢ (Triệu VNĐ)</div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="monthlyPrice">Giá Hàng Tháng (Triệu)</label>
-                        <input type="number" id="monthlyPrice" placeholder="VD: 3.3" step="0.1" value="0" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="deposit">Tiền Cọc (Triệu)</label>
-                        <input type="number" id="deposit" placeholder="VD: 1" step="0.1" value="0" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="advancePayment">Thanh Toán Trước (Triệu) - ttck</label>
-                        <input type="number" id="advancePayment" placeholder="VD: 1.6" step="0.1" value="0" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cashPayment">Thanh Toán Tiền Mặt (Triệu) - tttm</label>
-                        <input type="number" id="cashPayment" placeholder="VD: 4" step="0.1" value="0" required>
-                    </div>
-                </div>
-
-                <div class="section-title">👤 THÔNG TIN KHÁC</div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="saleName">Tên Người Sale</label>
-                        <input type="text" id="saleName" placeholder="Nhập tên người sale" required>
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button type="submit" class="btn-submit">💾 Lưu & Tạo Thông Báo</button>
-                    <button type="reset" class="btn-reset">🔄 Làm Mới</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- History Section -->
-        <div class="history-container">
-            <h2>📋 Danh Sách Thông Báo</h2>
-            <div class="history-list" id="historyList">
-                <div class="empty-message">Chưa có thông báo nào</div>
-            </div>
-            <button class="btn-clear-all" id="clearAllBtn" style="display: none;">🗑️ Xóa Tất Cả</button>
+    <div class="header">
+        <h1>🏨 Quản Lý Khách Sạn</h1>
+        <div class="config-alert" id="configAlert">
+            ⚙️ Cảnh báo: Chưa cấu hình Supabase! Dữ liệu sẽ chỉ lưu trên trình duyệt.
         </div>
     </div>
 
-    <!-- Modal thông báo -->
-    <div id="notificationModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">✅ Hợp Đồng Được Lưu</div>
-            <div class="modal-body" id="notificationText"></div>
-            <div class="modal-buttons">
-                <button class="btn-copy" onclick="copyToClipboard()">📋 Sao Chép</button>
-                <button class="btn-close" onclick="closeModal()">Đóng</button>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('booking')">📋 Đặt Phòng</button>
+        <button class="tab-btn" onclick="switchTab('laundry')">👕 Giặt Ủi</button>
+        <button class="tab-btn" onclick="switchTab('cleaning')">🧹 Dọn Phòng</button>
+    </div>
+
+    <!-- TAB ĐẶT PHÒNG -->
+    <div id="booking" class="tab-content active">
+        <div class="wrapper">
+            <div class="container">
+                <h2>🏨 HỢP ĐỒNG THUÊ PHÒNG</h2>
+                <form id="bookingForm" class="form-section">
+                    <div class="section-title">📋 THÔNG TIN PHÒNG</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roomSymbol">Ký Hiệu Phòng</label>
+                            <input type="text" id="roomSymbol" placeholder="VD: P902" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="months">Số Tháng Thuê</label>
+                            <input type="number" id="months" min="1" placeholder="VD: 3" value="1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="checkInDate">Ngày Vào (DD/MM)</label>
+                            <input type="text" id="checkInDate" placeholder="VD: 16/10" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkOutDate">Ngày Ra (Tự Động)</label>
+                            <input type="text" id="checkOutDate" placeholder="Tự động tính" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+
+                    <div class="section-title">💰 THÔNG TIN GIÁ CẢ (Triệu VNĐ)</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="monthlyPrice">Giá Hàng Tháng (Triệu)</label>
+                            <input type="number" id="monthlyPrice" placeholder="VD: 3.3" step="0.1" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deposit">Tiền Cọc (Triệu)</label>
+                            <input type="number" id="deposit" placeholder="VD: 1" step="0.1" value="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="advancePayment">Thanh Toán Trước (Triệu)</label>
+                            <input type="number" id="advancePayment" placeholder="VD: 1.6" step="0.1" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cashPayment">Thanh Toán Tiền Mặt (Triệu)</label>
+                            <input type="number" id="cashPayment" placeholder="VD: 4" step="0.1" value="0" required>
+                        </div>
+                    </div>
+
+                    <div class="section-title">👤 THÔNG TIN KHÁC</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Tên Khách Hàng</label>
+                            <input type="text" id="customerName" placeholder="Nhập tên" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="saleName">Tên Người Sale</label>
+                            <input type="text" id="saleName" placeholder="Nhập tên" required>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-submit">💾 Lưu</button>
+                        <button type="reset" class="btn-reset">🔄 Làm Mới</button>
+                    </div>
+                    <div id="bookingMessage" class="message" style="display: none;"></div>
+                </form>
+            </div>
+
+            <div class="history-container">
+                <h2>📋 Danh Sách</h2>
+                <div class="history-list" id="bookingList">
+                    <div class="empty-message">Chưa có dữ liệu</div>
+                </div>
+                <button class="btn-clear-all" id="clearBookingBtn" style="display: none;">🗑️ Xóa Tất Cả</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB GIẶT ỦI -->
+    <div id="laundry" class="tab-content">
+        <div class="wrapper">
+            <div class="container">
+                <h2>👕 GIẶT ỦI</h2>
+                <form id="laundryForm" class="form-section">
+                    <div class="section-title">📝 THÔNG TIN GIẶT ỦI</div>
+
+                    <div class="form-group">
+                        <label for="laundryDate">Ngày Giặt</label>
+                        <input type="date" id="laundryDate" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="laundryRoom">Số Phòng</label>
+                            <input type="text" id="laundryRoom" placeholder="VD: P902" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="laundryWeight">Cân Nặng (kg)</label>
+                            <input type="number" id="laundryWeight" placeholder="VD: 5.5" step="0.1" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="laundryNotes">Ghi Chú</label>
+                        <textarea id="laundryNotes" placeholder="Nhập ghi chú (tùy chọn)" rows="3"></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-submit">💾 Lưu</button>
+                        <button type="reset" class="btn-reset">🔄 Làm Mới</button>
+                    </div>
+                    <div id="laundryMessage" class="message" style="display: none;"></div>
+                </form>
+            </div>
+
+            <div class="history-container">
+                <h2>📋 Danh Sách Giặt Ủi</h2>
+                <div class="history-list" id="laundryList">
+                    <div class="empty-message">Chưa có dữ liệu</div>
+                </div>
+                <button class="btn-clear-all" id="clearLaundryBtn" style="display: none;">🗑️ Xóa Tất Cả</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB DỌN PHÒNG -->
+    <div id="cleaning" class="tab-content">
+        <div class="wrapper">
+            <div class="container">
+                <h2>🧹 DỌN PHÒNG</h2>
+                <form id="cleaningForm" class="form-section">
+                    <div class="section-title">📝 THÔNG TIN DỌN PHÒNG</div>
+
+                    <div class="form-group">
+                        <label for="cleaningDate">Ngày Dọn</label>
+                        <input type="date" id="cleaningDate" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cleaningRoom">Số Phòng</label>
+                            <input type="text" id="cleaningRoom" placeholder="VD: P902" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cleaningStatus">Trạng Thái</label>
+                            <select id="cleaningStatus" required>
+                                <option value="">-- Chọn trạng thái --</option>
+                                <option value="Đã dọn">✅ Đã dọn</option>
+                                <option value="Đang dọn">⏳ Đang dọn</option>
+                                <option value="Chưa dọn">❌ Chưa dọn</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cleaningNotes">Ghi Chú</label>
+                        <textarea id="cleaningNotes" placeholder="Nhập ghi chú (tùy chọn)" rows="3"></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-submit">💾 Lưu</button>
+                        <button type="reset" class="btn-reset">🔄 Làm Mới</button>
+                    </div>
+                    <div id="cleaningMessage" class="message" style="display: none;"></div>
+                </form>
+            </div>
+
+            <div class="history-container">
+                <h2>📋 Danh Sách Dọn Phòng</h2>
+                <div class="history-list" id="cleaningList">
+                    <div class="empty-message">Chưa có dữ liệu</div>
+                </div>
+                <button class="btn-clear-all" id="clearCleaningBtn" style="display: none;">🗑️ Xóa Tất Cả</button>
             </div>
         </div>
     </div>
 
     <script>
-        let notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-        let lastNotificationText = '';
+        // ===== SUPABASE CONFIG =====
+        const SUPABASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
+        let supabase = null;
+        let isSupabaseConfigured = false;
 
-        // Tính ngày ra dựa trên ngày vào và số tháng
+        function initSupabase() {
+            if (SUPABASE_URL.includes('bwlrhewncykjvvjcwipu')) {
+                console.log('Supabase chưa cấu hình. Sử dụng localStorage.');
+                isSupabaseConfigured = false;
+            } else {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                isSupabaseConfigured = true;
+                document.getElementById('configAlert').style.display = 'none';
+                console.log('Supabase đã được cấu hình!');
+            }
+        }
+
+        function showMessage(elementId, message, type = 'success') {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `message ${type}`;
+            el.style.display = 'block';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 3000);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
         function calculateCheckOutDate() {
             const checkInText = document.getElementById('checkInDate').value;
             const months = parseInt(document.getElementById('months').value) || 1;
@@ -511,128 +602,277 @@
             }
         }
 
-        function formatCurrency(num) {
-            return num.toFixed(1).replace('.', ',');
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' });
         }
 
-        function generateNotification() {
-            const roomSymbol = document.getElementById('roomSymbol').value;
-            const months = document.getElementById('months').value;
-            const checkInDate = document.getElementById('checkInDate').value;
-            const checkOutDate = document.getElementById('checkOutDate').value;
-            const monthlyPrice = parseFloat(document.getElementById('monthlyPrice').value) || 0;
-            const deposit = parseFloat(document.getElementById('deposit').value) || 0;
-            const advancePayment = parseFloat(document.getElementById('advancePayment').value) || 0;
-            const cashPayment = parseFloat(document.getElementById('cashPayment').value) || 0;
-            const saleName = document.getElementById('saleName').value;
-
-            const notification = `${roomSymbol} 91HXH ${months}t(${checkInDate}-${checkOutDate}) giá ${formatCurrency(monthlyPrice)}tr Cọc 1tt1 Cọc trước ${formatCurrency(deposit)}tr Tổng thanh toán: ${formatCurrency(advancePayment)}tr ttck và ${formatCurrency(cashPayment)}tr tttm Sale ${saleName}`;
-
-            return notification;
-        }
-
-        function saveNotification(text) {
-            const now = new Date();
-            const timeStr = now.toLocaleString('vi-VN');
-
-            const item = {
-                text: text,
-                timestamp: timeStr,
-                id: Date.now()
-            };
-
-            notifications.unshift(item);
-            localStorage.setItem('notifications', JSON.stringify(notifications));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const historyList = document.getElementById('historyList');
-            const clearAllBtn = document.getElementById('clearAllBtn');
-
-            if (notifications.length === 0) {
-                historyList.innerHTML = '<div class="empty-message">Chưa có thông báo nào</div>';
-                clearAllBtn.style.display = 'none';
-                return;
-            }
-
-            clearAllBtn.style.display = 'block';
-            historyList.innerHTML = notifications.map(item => `
-                <div class="notification-item">
-                    <button class="btn-item-copy" onclick="copyNotification('${item.id}')">Sao Chép</button>
-                    ${item.text}
-                    <div class="notification-time">${item.timestamp}</div>
-                </div>
-            `).join('');
-        }
-
-        function copyNotification(id) {
-            const item = notifications.find(n => n.id === parseInt(id));
-            if (item) {
-                navigator.clipboard.writeText(item.text).then(() => {
-                    alert('✅ Đã sao chép!');
-                });
-            }
-        }
-
+        // ===== TAB ĐẶT PHÒNG =====
         document.getElementById('checkInDate').addEventListener('change', calculateCheckOutDate);
-        document.getElementById('months').addEventListener('change', calculateCheckOutDate);
         document.getElementById('months').addEventListener('input', calculateCheckOutDate);
 
-        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            try {
-                lastNotificationText = generateNotification();
+            const booking = {
+                room: document.getElementById('roomSymbol').value,
+                months_stay: parseInt(document.getElementById('months').value),
+                check_in_date: document.getElementById('checkInDate').value,
+                check_out_date: document.getElementById('checkOutDate').value,
+                price_per_month: parseFloat(document.getElementById('monthlyPrice').value),
+                deposit: parseFloat(document.getElementById('deposit').value),
+                advance_payment: parseFloat(document.getElementById('advancePayment').value),
+                cash_payment: parseFloat(document.getElementById('cashPayment').value),
+                customer_name: document.getElementById('customerName').value,
+                sale_name: document.getElementById('saleName').value
+            };
 
-                if (!lastNotificationText.includes('Undefined') && lastNotificationText.trim()) {
-                    saveNotification(lastNotificationText);
-                    document.getElementById('notificationText').textContent = lastNotificationText;
-                    document.getElementById('notificationModal').classList.add('show');
-                    document.getElementById('bookingForm').reset();
-                } else {
-                    alert('⚠️ Vui lòng điền đầy đủ thông tin!');
+            try {
+                if (isSupabaseConfigured) {
+                    const { error } = await supabase.from('bookings').insert([booking]);
+                    if (error) throw error;
                 }
 
+                showMessage('bookingMessage', '✅ Lưu thành công!', 'success');
+                document.getElementById('bookingForm').reset();
+                loadBookings();
+            } catch (error) {
+                showMessage('bookingMessage', '❌ Lỗi: ' + error.message, 'error');
+            }
+        });
+
+        async function loadBookings() {
+            try {
+                if (!isSupabaseConfigured) {
+                    document.getElementById('bookingList').innerHTML = '<div class="empty-message">Supabase chưa cấu hình. Dữ liệu sẽ lưu cục bộ.</div>';
+                    return;
+                }
+
+                const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+
+                const list = document.getElementById('bookingList');
+                const clearBtn = document.getElementById('clearBookingBtn');
+
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
+                    clearBtn.style.display = 'none';
+                    return;
+                }
+
+                clearBtn.style.display = 'block';
+                list.innerHTML = data.map(b => `
+                    <div class="item">
+                        <button class="btn-item-delete" type="button" onclick="deleteBooking(${b.id})">🗑️</button>
+                        <strong>${b.room}</strong> - ${b.customer_name}<br>
+                        ${b.check_in_date} → ${b.check_out_date} (${b.months_stay} tháng)<br>
+                        Giá: ${b.price_per_month}tr | Cọc: ${b.deposit}tr<br>
+                        Thanh toán: ${b.advance_payment}tr (ttck) + ${b.cash_payment}tr (tttm)<br>
+                        Sale: ${b.sale_name}
+                        <div class="item-time">${formatDate(b.created_at)}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+            }
+        }
+
+        async function deleteBooking(id) {
+            if (!confirm('Xóa bản ghi này?')) return;
+            try {
+                const { error } = await supabase.from('bookings').delete().eq('id', id);
+                if (error) throw error;
+                loadBookings();
             } catch (error) {
                 alert('❌ Lỗi: ' + error.message);
-                console.error('Error:', error);
             }
-        });
-
-        function copyToClipboard() {
-            navigator.clipboard.writeText(lastNotificationText).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '✅ Đã Sao Chép!';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                }, 2000);
-            });
         }
 
-        function closeModal() {
-            document.getElementById('notificationModal').classList.remove('show');
+        // ===== TAB GIẶT ỦI =====
+        document.getElementById('laundryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const laundry = {
+                laundry_date: document.getElementById('laundryDate').value,
+                room: document.getElementById('laundryRoom').value,
+                weight: parseFloat(document.getElementById('laundryWeight').value),
+                notes: document.getElementById('laundryNotes').value || null
+            };
+
+            try {
+                if (isSupabaseConfigured) {
+                    const { error } = await supabase.from('laundries').insert([laundry]);
+                    if (error) throw error;
+                }
+
+                showMessage('laundryMessage', '✅ Lưu thành công!', 'success');
+                document.getElementById('laundryForm').reset();
+                loadLaundries();
+            } catch (error) {
+                showMessage('laundryMessage', '❌ Lỗi: ' + error.message, 'error');
+            }
+        });
+
+        async function loadLaundries() {
+            try {
+                if (!isSupabaseConfigured) {
+                    document.getElementById('laundryList').innerHTML = '<div class="empty-message">Supabase chưa cấu hình. Dữ liệu sẽ lưu cục bộ.</div>';
+                    return;
+                }
+
+                const { data, error } = await supabase.from('laundries').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+
+                const list = document.getElementById('laundryList');
+                const clearBtn = document.getElementById('clearLaundryBtn');
+
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
+                    clearBtn.style.display = 'none';
+                    return;
+                }
+
+                clearBtn.style.display = 'block';
+                list.innerHTML = data.map(l => `
+                    <div class="item">
+                        <button class="btn-item-delete" type="button" onclick="deleteLaundry(${l.id})">🗑️</button>
+                        <strong>📅 ${formatDate(l.laundry_date)}</strong><br>
+                        🚪 Phòng: ${l.room} | ⚖️ Cân nặng: ${l.weight} kg<br>
+                        ${l.notes ? `📝 Ghi chú: ${l.notes}` : ''}
+                        <div class="item-time">${formatDate(l.created_at)}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading laundries:', error);
+            }
         }
 
-        document.getElementById('clearAllBtn').addEventListener('click', () => {
-            if (confirm('Bạn có chắc muốn xóa tất cả thông báo?')) {
-                notifications = [];
-                localStorage.removeItem('notifications');
-                renderHistory();
+        async function deleteLaundry(id) {
+            if (!confirm('Xóa bản ghi này?')) return;
+            try {
+                const { error } = await supabase.from('laundries').delete().eq('id', id);
+                if (error) throw error;
+                loadLaundries();
+            } catch (error) {
+                alert('❌ Lỗi: ' + error.message);
+            }
+        }
+
+        document.getElementById('clearLaundryBtn').addEventListener('click', async () => {
+            if (!confirm('Xóa tất cả bản ghi?')) return;
+            try {
+                const { error } = await supabase.from('laundries').delete().neq('id', 0);
+                if (error) throw error;
+                loadLaundries();
+            } catch (error) {
+                alert('❌ Lỗi: ' + error.message);
             }
         });
 
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('notificationModal');
-            if (e.target === modal) {
-                closeModal();
+        // ===== TAB DỌN PHÒNG =====
+        document.getElementById('cleaningForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const cleaning = {
+                cleaning_date: document.getElementById('cleaningDate').value,
+                room: document.getElementById('cleaningRoom').value,
+                status: document.getElementById('cleaningStatus').value,
+                notes: document.getElementById('cleaningNotes').value || null
+            };
+
+            try {
+                if (isSupabaseConfigured) {
+                    const { error } = await supabase.from('cleanings').insert([cleaning]);
+                    if (error) throw error;
+                }
+
+                showMessage('cleaningMessage', '✅ Lưu thành công!', 'success');
+                document.getElementById('cleaningForm').reset();
+                loadCleanings();
+            } catch (error) {
+                showMessage('cleaningMessage', '❌ Lỗi: ' + error.message, 'error');
             }
         });
 
-        // Khởi tạo
+        async function loadCleanings() {
+            try {
+                if (!isSupabaseConfigured) {
+                    document.getElementById('cleaningList').innerHTML = '<div class="empty-message">Supabase chưa cấu hình. Dữ liệu sẽ lưu cục bộ.</div>';
+                    return;
+                }
+
+                const { data, error } = await supabase.from('cleanings').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+
+                const list = document.getElementById('cleaningList');
+                const clearBtn = document.getElementById('clearCleaningBtn');
+
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
+                    clearBtn.style.display = 'none';
+                    return;
+                }
+
+                clearBtn.style.display = 'block';
+                list.innerHTML = data.map(c => `
+                    <div class="item">
+                        <button class="btn-item-delete" type="button" onclick="deleteCleaning(${c.id})">🗑️</button>
+                        <strong>📅 ${formatDate(c.cleaning_date)}</strong><br>
+                        🚪 Phòng: ${c.room} | ${c.status}<br>
+                        ${c.notes ? `📝 Ghi chú: ${c.notes}` : ''}
+                        <div class="item-time">${formatDate(c.created_at)}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading cleanings:', error);
+            }
+        }
+
+        async function deleteCleaning(id) {
+            if (!confirm('Xóa bản ghi này?')) return;
+            try {
+                const { error } = await supabase.from('cleanings').delete().eq('id', id);
+                if (error) throw error;
+                loadCleanings();
+            } catch (error) {
+                alert('❌ Lỗi: ' + error.message);
+            }
+        }
+
+        document.getElementById('clearCleaningBtn').addEventListener('click', async () => {
+            if (!confirm('Xóa tất cả bản ghi?')) return;
+            try {
+                const { error } = await supabase.from('cleanings').delete().neq('id', 0);
+                if (error) throw error;
+                loadCleanings();
+            } catch (error) {
+                alert('❌ Lỗi: ' + error.message);
+            }
+        });
+
+        document.getElementById('clearBookingBtn').addEventListener('click', async () => {
+            if (!confirm('Xóa tất cả bản ghi?')) return;
+            try {
+                const { error } = await supabase.from('bookings').delete().neq('id', 0);
+                if (error) throw error;
+                loadBookings();
+            } catch (error) {
+                alert('❌ Lỗi: ' + error.message);
+            }
+        });
+
+        // ===== KHỞI TẠO =====
         window.addEventListener('load', () => {
-            renderHistory();
+            initSupabase();
+            loadBookings();
+            loadLaundries();
+            loadCleanings();
+
+            // Set today's date for date inputs
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('laundryDate').value = today;
+            document.getElementById('cleaningDate').value = today;
         });
     </script>
 </body>
