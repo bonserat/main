@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt Phòng Khách Sạn</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.38.4/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -22,13 +21,39 @@
             padding: 20px;
         }
 
+        .wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1400px;
+            width: 100%;
+        }
+
         .container {
             background: white;
             border-radius: 15px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
-            width: 100%;
             padding: 40px;
+        }
+
+        .form-section {
+            max-height: 90vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .form-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-section::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .form-section::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
         }
 
         h1 {
@@ -36,6 +61,12 @@
             margin-bottom: 30px;
             text-align: center;
             font-size: 28px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
         }
 
         .form-group {
@@ -69,12 +100,6 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .form-row-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
         }
 
@@ -212,123 +237,232 @@
             background: #e0e0e0;
         }
 
-        .message {
+        /* Danh sách thông báo */
+        .history-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .notification-item {
+            background: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
-            margin-top: 20px;
-            text-align: center;
-            font-weight: 600;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+            font-family: 'Courier New', monospace;
+            word-break: break-word;
+            position: relative;
+            transition: all 0.3s;
         }
 
-        .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .notification-item:hover {
+            background: #f0f0f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .error {
+        .notification-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .btn-item-copy {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .notification-item:hover .btn-item-copy {
+            opacity: 1;
+        }
+
+        .btn-item-copy:hover {
+            background: #764ba2;
+        }
+
+        .btn-clear-all {
+            width: 100%;
+            padding: 12px;
             background: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border: 2px solid #f5c6cb;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: auto;
+            transition: all 0.3s;
         }
 
-        @media (max-width: 600px) {
-            .form-row, .form-row-3 {
+        .btn-clear-all:hover {
+            background: #f5c6cb;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        @media (max-width: 1200px) {
+            .wrapper {
                 grid-template-columns: 1fr;
             }
 
-            .container {
-                padding: 25px;
+            .container, .history-container {
+                padding: 30px;
             }
 
             h1 {
-                font-size: 22px;
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
             }
 
-            .modal-content {
-                width: 95%;
+            .container, .history-container {
+                padding: 20px;
+            }
+
+            h1, h2 {
+                font-size: 18px;
+            }
+
+            .wrapper {
+                gap: 15px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🏨 HỢP ĐỒNG THUÊ PHÒNG</h1>
+    <div class="wrapper">
+        <!-- Form Section -->
+        <div class="container">
+            <h1>🏨 HỢP ĐỒNG THUÊ PHÒNG</h1>
 
-        <form id="bookingForm">
-            <div class="section-title">📋 THÔNG TIN PHÒNG</div>
+            <form id="bookingForm" class="form-section">
+                <div class="section-title">📋 THÔNG TIN PHÒNG</div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="roomSymbol">Ký Hiệu Phòng (VD: P902)</label>
-                    <input type="text" id="roomSymbol" placeholder="VD: P902, P903..." required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="roomSymbol">Ký Hiệu Phòng (VD: P902)</label>
+                        <input type="text" id="roomSymbol" placeholder="VD: P902, P903..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="months">Số Tháng Thuê</label>
+                        <input type="number" id="months" min="1" placeholder="VD: 3, 6, 12..." value="1" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="months">Số Tháng Thuê</label>
-                    <input type="number" id="months" min="1" placeholder="VD: 3, 6, 12..." value="1" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="checkInDate">Ngày Vào (DD/MM)</label>
+                        <input type="text" id="checkInDate" placeholder="VD: 16/10" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="checkOutDate">Ngày Ra (Tự Động)</label>
+                        <input type="text" id="checkOutDate" placeholder="Tự động tính" readonly style="background: #f5f5f5;">
+                    </div>
                 </div>
+
+                <div class="section-title">💰 THÔNG TIN GIÁ CẢ (Triệu VNĐ)</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="monthlyPrice">Giá Hàng Tháng (Triệu)</label>
+                        <input type="number" id="monthlyPrice" placeholder="VD: 3.3" step="0.1" value="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deposit">Tiền Cọc (Triệu)</label>
+                        <input type="number" id="deposit" placeholder="VD: 1" step="0.1" value="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="advancePayment">Thanh Toán Trước (Triệu) - ttck</label>
+                        <input type="number" id="advancePayment" placeholder="VD: 1.6" step="0.1" value="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cashPayment">Thanh Toán Tiền Mặt (Triệu) - tttm</label>
+                        <input type="number" id="cashPayment" placeholder="VD: 4" step="0.1" value="0" required>
+                    </div>
+                </div>
+
+                <div class="section-title">👤 THÔNG TIN KHÁC</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerName">Tên Khách Hàng</label>
+                        <input type="text" id="customerName" placeholder="Nhập tên khách hàng" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="saleName">Tên Người Sale</label>
+                        <input type="text" id="saleName" placeholder="Nhập tên người sale" required>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">💾 Lưu & Tạo Thông Báo</button>
+                    <button type="reset" class="btn-reset">🔄 Làm Mới</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-container">
+            <h2>📋 Danh Sách Thông Báo</h2>
+            <div class="history-list" id="historyList">
+                <div class="empty-message">Chưa có thông báo nào</div>
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="checkInDate">Ngày Vào (DD/MM)</label>
-                    <input type="text" id="checkInDate" placeholder="VD: 16/10" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="checkOutDate">Ngày Ra (DD/MM/YYYY)</label>
-                    <input type="text" id="checkOutDate" placeholder="VD: 15/02/2026" required>
-                </div>
-            </div>
-
-            <div class="section-title">💰 THÔNG TIN GIÁ CẢ</div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="monthlyPrice">Giá Hàng Tháng (VNĐ)</label>
-                    <input type="number" id="monthlyPrice" placeholder="VD: 3300000" value="0" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="deposit">Tiền Cọc (VNĐ)</label>
-                    <input type="number" id="deposit" placeholder="VD: 1000000" value="0" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="advancePayment">Thanh Toán Trước (VNĐ) - ttck</label>
-                    <input type="number" id="advancePayment" placeholder="VD: 1600000" value="0" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="cashPayment">Thanh Toán Tiền Mặt (VNĐ) - tttm</label>
-                    <input type="number" id="cashPayment" placeholder="VD: 4000000" value="0" required>
-                </div>
-            </div>
-
-            <div class="section-title">👤 THÔNG TIN KHÁC</div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="customerName">Tên Khách Hàng</label>
-                    <input type="text" id="customerName" placeholder="Nhập tên khách hàng" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="saleName">Tên Người Sale</label>
-                    <input type="text" id="saleName" placeholder="Nhập tên người sale" required>
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button type="submit" class="btn-submit">💾 Lưu & Tạo Thông Báo</button>
-                <button type="reset" class="btn-reset">🔄 Làm Mới</button>
-            </div>
-
-            <div id="message"></div>
-        </form>
+            <button class="btn-clear-all" id="clearAllBtn" style="display: none;">🗑️ Xóa Tất Cả</button>
+        </div>
     </div>
 
     <!-- Modal thông báo -->
@@ -344,19 +478,46 @@
     </div>
 
     <script>
-        // Cấu hình Supabase
-        const SUPABASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
-
-        let supabase;
+        let notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
         let lastNotificationText = '';
 
-        function initSupabase() {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Tính ngày ra dựa trên ngày vào và số tháng
+        function calculateCheckOutDate() {
+            const checkInText = document.getElementById('checkInDate').value;
+            const months = parseInt(document.getElementById('months').value) || 1;
+
+            if (!checkInText) {
+                document.getElementById('checkOutDate').value = '';
+                return;
+            }
+
+            const parts = checkInText.split('/');
+            if (parts.length !== 2) {
+                document.getElementById('checkOutDate').value = '';
+                return;
+            }
+
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]);
+            const currentYear = new Date().getFullYear();
+
+            try {
+                const checkInDate = new Date(currentYear, month - 1, day);
+                checkInDate.setMonth(checkInDate.getMonth() + months);
+                checkInDate.setDate(checkInDate.getDate() - 1);
+
+                const outDay = String(checkInDate.getDate()).padStart(2, '0');
+                const outMonth = String(checkInDate.getMonth() + 1).padStart(2, '0');
+                const outYear = checkInDate.getFullYear();
+
+                document.getElementById('checkOutDate').value = `${outDay}/${outMonth}/${outYear}`;
+            } catch (e) {
+                document.getElementById('checkOutDate').value = '';
+            }
         }
 
-        function formatNumber(num) {
-            return Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        function formatCurrency(num) {
+            return num.toFixed(1).replace('.', ',');
         }
 
         function generateNotification() {
@@ -364,65 +525,82 @@
             const months = document.getElementById('months').value;
             const checkInDate = document.getElementById('checkInDate').value;
             const checkOutDate = document.getElementById('checkOutDate').value;
-            const monthlyPrice = parseInt(document.getElementById('monthlyPrice').value) || 0;
-            const deposit = parseInt(document.getElementById('deposit').value) || 0;
-            const advancePayment = parseInt(document.getElementById('advancePayment').value) || 0;
-            const cashPayment = parseInt(document.getElementById('cashPayment').value) || 0;
-            const customerName = document.getElementById('customerName').value;
+            const monthlyPrice = parseFloat(document.getElementById('monthlyPrice').value) || 0;
+            const deposit = parseFloat(document.getElementById('deposit').value) || 0;
+            const advancePayment = parseFloat(document.getElementById('advancePayment').value) || 0;
+            const cashPayment = parseFloat(document.getElementById('cashPayment').value) || 0;
             const saleName = document.getElementById('saleName').value;
 
-            const notification = `${roomSymbol} ${saleName}HXH ${months}t( ${checkInDate}-${checkOutDate}) giá ${formatNumber(monthlyPrice)} Cọc 1t+1 Cọc trước ${formatNumber(deposit)} Tổng thanh toán: ${formatNumber(advancePayment)} ttck và ${formatNumber(cashPayment)} tttm Sale ${saleName}`;
+            const notification = `${roomSymbol} ${saleName}HXH ${months}t( ${checkInDate}-${checkOutDate}) giá ${formatCurrency(monthlyPrice)}tr Cọc 1t+1 Cọc trước ${formatCurrency(deposit)}tr Tổng thanh toán: ${formatCurrency(advancePayment)}tr ttck và ${formatCurrency(cashPayment)}tr tttm Sale ${saleName}`;
 
             return notification;
         }
 
-        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+        function saveNotification(text) {
+            const now = new Date();
+            const timeStr = now.toLocaleString('vi-VN');
+
+            const item = {
+                text: text,
+                timestamp: timeStr,
+                id: Date.now()
+            };
+
+            notifications.unshift(item);
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+
+            if (notifications.length === 0) {
+                historyList.innerHTML = '<div class="empty-message">Chưa có thông báo nào</div>';
+                clearAllBtn.style.display = 'none';
+                return;
+            }
+
+            clearAllBtn.style.display = 'block';
+            historyList.innerHTML = notifications.map(item => `
+                <div class="notification-item">
+                    <button class="btn-item-copy" onclick="copyNotification('${item.id}')">Sao Chép</button>
+                    ${item.text}
+                    <div class="notification-time">${item.timestamp}</div>
+                </div>
+            `).join('');
+        }
+
+        function copyNotification(id) {
+            const item = notifications.find(n => n.id === parseInt(id));
+            if (item) {
+                navigator.clipboard.writeText(item.text).then(() => {
+                    alert('✅ Đã sao chép!');
+                });
+            }
+        }
+
+        document.getElementById('checkInDate').addEventListener('change', calculateCheckOutDate);
+        document.getElementById('months').addEventListener('change', calculateCheckOutDate);
+        document.getElementById('months').addEventListener('input', calculateCheckOutDate);
+
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const messageEl = document.getElementById('message');
-            messageEl.innerHTML = '';
-
             try {
-                // Tạo thông báo
                 lastNotificationText = generateNotification();
 
-                // Lưu vào Supabase (nếu cấu hình)
-                if (!SUPABASE_URL.includes('bwlrhewncykjvvjcwipu')) {
-                    try {
-                        if (!supabase) {
-                            initSupabase();
-                        }
-
-                        const booking = {
-                            room_symbol: document.getElementById('roomSymbol').value,
-                            customer_name: document.getElementById('customerName').value,
-                            check_in_date: document.getElementById('checkInDate').value,
-                            check_out_date: document.getElementById('checkOutDate').value,
-                            months_stay: parseInt(document.getElementById('months').value),
-                            monthly_price: parseFloat(document.getElementById('monthlyPrice').value),
-                            deposit: parseFloat(document.getElementById('deposit').value),
-                            advance_payment: parseFloat(document.getElementById('advancePayment').value),
-                            cash_payment: parseFloat(document.getElementById('cashPayment').value),
-                            sale_name: document.getElementById('saleName').value,
-                            notification_text: lastNotificationText,
-                            created_at: new Date().toISOString()
-                        };
-
-                        await supabase.from('bookings').insert([booking]);
-                    } catch (error) {
-                        console.log('Supabase chưa cấu hình, nhưng thông báo vẫn được tạo');
-                    }
+                if (!lastNotificationText.includes('Undefined') && lastNotificationText.trim()) {
+                    saveNotification(lastNotificationText);
+                    document.getElementById('notificationText').textContent = lastNotificationText;
+                    document.getElementById('notificationModal').classList.add('show');
+                    document.getElementById('bookingForm').reset();
+                } else {
+                    alert('⚠️ Vui lòng điền đầy đủ thông tin!');
                 }
 
-                // Hiện modal
-                document.getElementById('notificationText').textContent = lastNotificationText;
-                document.getElementById('notificationModal').classList.add('show');
-
-                document.getElementById('bookingForm').reset();
-
             } catch (error) {
-                messageEl.className = 'message error';
-                messageEl.textContent = `❌ Lỗi: ${error.message}`;
+                alert('❌ Lỗi: ' + error.message);
                 console.error('Error:', error);
             }
         });
@@ -442,16 +620,24 @@
             document.getElementById('notificationModal').classList.remove('show');
         }
 
-        window.addEventListener('load', () => {
-            initSupabase();
+        document.getElementById('clearAllBtn').addEventListener('click', () => {
+            if (confirm('Bạn có chắc muốn xóa tất cả thông báo?')) {
+                notifications = [];
+                localStorage.removeItem('notifications');
+                renderHistory();
+            }
         });
 
-        // Đóng modal khi click ngoài
         window.addEventListener('click', (e) => {
             const modal = document.getElementById('notificationModal');
             if (e.target === modal) {
                 closeModal();
             }
+        });
+
+        // Khởi tạo
+        window.addEventListener('load', () => {
+            renderHistory();
         });
     </script>
 </body>
