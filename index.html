@@ -469,7 +469,6 @@
                 <div class="history-list" id="laundryList">
                     <div class="empty-message">Chưa có dữ liệu</div>
                 </div>
-                <button class="btn-clear-all" id="clearLaundryBtn" style="display: none;">🗑️ Xóa Tất Cả</button>
             </div>
         </div>
     </div>
@@ -521,7 +520,6 @@
                 <div class="history-list" id="cleaningList">
                     <div class="empty-message">Chưa có dữ liệu</div>
                 </div>
-                <button class="btn-clear-all" id="clearCleaningBtn" style="display: none;">🗑️ Xóa Tất Cả</button>
             </div>
         </div>
     </div>
@@ -708,11 +706,9 @@
 
                 if (!data || data.length === 0) {
                     list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
-                    clearBtn.style.display = 'none';
                     return;
                 }
 
-                clearBtn.style.display = 'block';
                 list.innerHTML = data.map(b => `
                     <div class="item">
                         <button class="btn-item-delete" type="button" onclick="deleteBooking(${b.id})">🗑️</button>
@@ -728,22 +724,6 @@
             } catch (error) {
                 console.error('Error loading bookings:', error);
                 document.getElementById('bookingList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
-            }
-        }
-
-        async function deleteBooking(id) {
-            if (!confirm('Xóa bản ghi này?')) return;
-            try {
-                if (isApiConfigured) {
-                    await apiRequest(`/bookings?id=eq.${id}`, 'DELETE');
-                } else {
-                    let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-                    bookings = bookings.filter(b => b.id !== id);
-                    localStorage.setItem('bookings', JSON.stringify(bookings));
-                }
-                loadBookings();
-            } catch (error) {
-                alert('❌ Lỗi: ' + error.message);
             }
         }
 
@@ -788,18 +768,14 @@
                 }
 
                 const list = document.getElementById('laundryList');
-                const clearBtn = document.getElementById('clearLaundryBtn');
 
                 if (!data || data.length === 0) {
                     list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
-                    clearBtn.style.display = 'none';
                     return;
                 }
 
-                clearBtn.style.display = 'block';
                 list.innerHTML = data.map(l => `
                     <div class="item">
-                        <button class="btn-item-delete" type="button" onclick="deleteLaundry(${l.id})">🗑️</button>
                         <strong>📅 ${formatDate(l.laundry_date)}</strong><br>
                         🚪 Phòng: ${l.room} | ⚖️ Cân nặng: ${l.weight} kg<br>
                         ${l.notes ? `📝 Ghi chú: ${l.notes}` : ''}
@@ -811,36 +787,6 @@
                 document.getElementById('laundryList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
         }
-
-        async function deleteLaundry(id) {
-            if (!confirm('Xóa bản ghi này?')) return;
-            try {
-                if (isApiConfigured) {
-                    await apiRequest(`/laundries?id=eq.${id}`, 'DELETE');
-                } else {
-                    let laundries = JSON.parse(localStorage.getItem('laundries') || '[]');
-                    laundries = laundries.filter(l => l.id !== id);
-                    localStorage.setItem('laundries', JSON.stringify(laundries));
-                }
-                loadLaundries();
-            } catch (error) {
-                alert('❌ Lỗi: ' + error.message);
-            }
-        }
-
-        document.getElementById('clearLaundryBtn').addEventListener('click', async () => {
-            if (!confirm('Xóa tất cả bản ghi?')) return;
-            try {
-                if (isApiConfigured) {
-                    await apiRequest('/laundries?id=neq.0', 'DELETE');
-                } else {
-                    localStorage.setItem('laundries', '[]');
-                }
-                loadLaundries();
-            } catch (error) {
-                alert('❌ Lỗi: ' + error.message);
-            }
-        });
 
         // ===== CLEANING FUNCTIONS =====
         document.getElementById('cleaningForm').addEventListener('submit', async (e) => {
@@ -883,18 +829,14 @@
                 }
 
                 const list = document.getElementById('cleaningList');
-                const clearBtn = document.getElementById('clearCleaningBtn');
 
                 if (!data || data.length === 0) {
                     list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
-                    clearBtn.style.display = 'none';
                     return;
                 }
 
-                clearBtn.style.display = 'block';
                 list.innerHTML = data.map(c => `
                     <div class="item">
-                        <button class="btn-item-delete" type="button" onclick="deleteCleaning(${c.id})">🗑️</button>
                         <strong>📅 ${formatDate(c.cleaning_date)}</strong><br>
                         🚪 Phòng: ${c.room} | ${c.status}<br>
                         ${c.notes ? `📝 Ghi chú: ${c.notes}` : ''}
@@ -906,36 +848,6 @@
                 document.getElementById('cleaningList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
         }
-
-        async function deleteCleaning(id) {
-            if (!confirm('Xóa bản ghi này?')) return;
-            try {
-                if (isApiConfigured) {
-                    await apiRequest(`/cleanings?id=eq.${id}`, 'DELETE');
-                } else {
-                    let cleanings = JSON.parse(localStorage.getItem('cleanings') || '[]');
-                    cleanings = cleanings.filter(c => c.id !== id);
-                    localStorage.setItem('cleanings', JSON.stringify(cleanings));
-                }
-                loadCleanings();
-            } catch (error) {
-                alert('❌ Lỗi: ' + error.message);
-            }
-        }
-
-        document.getElementById('clearCleaningBtn').addEventListener('click', async () => {
-            if (!confirm('Xóa tất cả bản ghi?')) return;
-            try {
-                if (isApiConfigured) {
-                    await apiRequest('/cleanings?id=neq.0', 'DELETE');
-                } else {
-                    localStorage.setItem('cleanings', '[]');
-                }
-                loadCleanings();
-            } catch (error) {
-                alert('❌ Lỗi: ' + error.message);
-            }
-        });
 
         // ===== INITIALIZATION =====
         window.addEventListener('load', async () => {
