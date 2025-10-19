@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Khách Sạn</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -338,7 +337,7 @@
     <div class="header">
         <h1>🏨 Quản Lý Khách Sạn</h1>
         <div class="config-alert" id="configAlert">
-            ⚙️ Cảnh báo: Chưa cấu hình Supabase! Dữ liệu sẽ chỉ lưu trên trình duyệt.
+            ⚙️ Cấu hình API: <span id="apiStatus">Đang kiểm tra...</span>
         </div>
     </div>
 
@@ -533,35 +532,64 @@
     </div>
 
     <script>
-        // ===== SUPABASE CONFIG =====
-        const SUPABASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
-        let supabase = null;
-        let isSupabaseConfigured = false;
+        // ===== REST API CONFIG =====
+        const API_BASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co';
+        const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
+        let isApiConfigured = false;
 
-        function initSupabase() {
-            if (SUPABASE_URL.includes('bwlrhewncykjvvjcwipu') || SUPABASE_ANON_KEY.includes('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI')) {
-    // tức là chưa thay giá trị mặc định
-    console.log('Supabase chưa cấu hình. Sử dụng localStorage.');
-    isSupabaseConfigured = false;
-    document.getElementById('configAlert').innerHTML =
-      '💾 Chế độ Offline: Dữ liệu sẽ lưu cục bộ trên thiết bị của bạn.';
-} else {
-    try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        isSupabaseConfigured = true;
-        document.getElementById('configAlert').style.display = 'none';
-        console.log('✅ Supabase đã được cấu hình thành công!');
-    } catch (error) {
-        console.error('Lỗi kết nối Supabase:', error);
-        isSupabaseConfigured = false;
-        document.getElementById('configAlert').innerHTML =
-          '⚠️ Không thể kết nối Supabase. Sử dụng chế độ Offline.';
-    }
-}
+        // ===== API HELPER FUNCTIONS =====
+        async function apiRequest(endpoint, method = 'GET', body = null) {
+            const headers = {
+                'apikey': API_KEY,
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            };
 
+            const options = {
+                method,
+                headers
+            };
+
+            if (body && method !== 'GET') {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API Error: ${response.status} - ${errorText}`);
+                }
+
+                if (method === 'DELETE') {
+                    return { success: true };
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API Request Error:', error);
+                throw error;
+            }
         }
 
+        async function testApiConnection() {
+            try {
+                await apiRequest('/bookings?limit=1');
+                isApiConfigured = true;
+                document.getElementById('apiStatus').textContent = '✅ Kết nối thành công';
+                document.getElementById('configAlert').style.background = '#d4edda';
+                document.getElementById('configAlert').style.borderColor = '#c3e6cb';
+                document.getElementById('configAlert').style.color = '#155724';
+            } catch (error) {
+                isApiConfigured = false;
+                document.getElementById('apiStatus').textContent = '❌ Không kết nối được - Sử dụng localStorage';
+                console.error('API connection failed:', error);
+            }
+        }
+
+        // ===== UTILITY FUNCTIONS =====
         function showMessage(elementId, message, type = 'success') {
             const el = document.getElementById(elementId);
             el.textContent = message;
@@ -619,7 +647,7 @@
             return date.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' });
         }
 
-        // ===== TAB ĐẶT PHÒNG =====
+        // ===== BOOKING FUNCTIONS =====
         document.getElementById('checkInDate').addEventListener('change', calculateCheckOutDate);
         document.getElementById('months').addEventListener('input', calculateCheckOutDate);
 
@@ -640,9 +668,15 @@
             };
 
             try {
-                if (isSupabaseConfigured) {
-                    const { error } = await supabase.from('bookings').insert([booking]);
-                    if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest('/bookings', 'POST', booking);
+                } else {
+                    // Fallback to localStorage
+                    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                    booking.id = Date.now();
+                    booking.created_at = new Date().toISOString();
+                    bookings.push(booking);
+                    localStorage.setItem('bookings', JSON.stringify(bookings));
                 }
 
                 showMessage('bookingMessage', '✅ Lưu thành công!', 'success');
@@ -655,13 +689,13 @@
 
         async function loadBookings() {
             try {
-                if (!isSupabaseConfigured) {
-                    document.getElementById('bookingList').innerHTML = '<div class="empty-message">Supabase chưa cấu hình. Dữ liệu sẽ lưu cục bộ.</div>';
-                    return;
-                }
+                let data;
 
-                const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
+                if (isApiConfigured) {
+                    data = await apiRequest('/bookings?order=created_at.desc');
+                } else {
+                    data = JSON.parse(localStorage.getItem('bookings') || '[]');
+                }
 
                 const list = document.getElementById('bookingList');
                 const clearBtn = document.getElementById('clearBookingBtn');
@@ -686,21 +720,27 @@
                 `).join('');
             } catch (error) {
                 console.error('Error loading bookings:', error);
+                document.getElementById('bookingList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
         }
 
         async function deleteBooking(id) {
             if (!confirm('Xóa bản ghi này?')) return;
             try {
-                const { error } = await supabase.from('bookings').delete().eq('id', id);
-                if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest(`/bookings?id=eq.${id}`, 'DELETE');
+                } else {
+                    let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                    bookings = bookings.filter(b => b.id !== id);
+                    localStorage.setItem('bookings', JSON.stringify(bookings));
+                }
                 loadBookings();
             } catch (error) {
                 alert('❌ Lỗi: ' + error.message);
             }
         }
 
-        // ===== TAB GIẶT ỦI =====
+        // ===== LAUNDRY FUNCTIONS =====
         document.getElementById('laundryForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -712,9 +752,14 @@
             };
 
             try {
-                if (isSupabaseConfigured) {
-                    const { error } = await supabase.from('laundries').insert([laundry]);
-                    if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest('/laundries', 'POST', laundry);
+                } else {
+                    const laundries = JSON.parse(localStorage.getItem('laundries') || '[]');
+                    laundry.id = Date.now();
+                    laundry.created_at = new Date().toISOString();
+                    laundries.push(laundry);
+                    localStorage.setItem('laundries', JSON.stringify(laundries));
                 }
 
                 showMessage('laundryMessage', '✅ Lưu thành công!', 'success');
@@ -727,13 +772,13 @@
 
         async function loadLaundries() {
             try {
-                if (!isSupabaseConfigured) {
-                    document.getElementById('laundryList').innerHTML = '<div class="empty-message">Supabase chưa cấu hình. Dữ liệu sẽ lưu cục bộ.</div>';
-                    return;
-                }
+                let data;
 
-                const { data, error } = await supabase.from('laundries').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
+                if (isApiConfigured) {
+                    data = await apiRequest('/laundries?order=created_at.desc');
+                } else {
+                    data = JSON.parse(localStorage.getItem('laundries') || '[]');
+                }
 
                 const list = document.getElementById('laundryList');
                 const clearBtn = document.getElementById('clearLaundryBtn');
@@ -756,14 +801,20 @@
                 `).join('');
             } catch (error) {
                 console.error('Error loading laundries:', error);
+                document.getElementById('laundryList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
         }
 
         async function deleteLaundry(id) {
             if (!confirm('Xóa bản ghi này?')) return;
             try {
-                const { error } = await supabase.from('laundries').delete().eq('id', id);
-                if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest(`/laundries?id=eq.${id}`, 'DELETE');
+                } else {
+                    let laundries = JSON.parse(localStorage.getItem('laundries') || '[]');
+                    laundries = laundries.filter(l => l.id !== id);
+                    localStorage.setItem('laundries', JSON.stringify(laundries));
+                }
                 loadLaundries();
             } catch (error) {
                 alert('❌ Lỗi: ' + error.message);
@@ -773,15 +824,18 @@
         document.getElementById('clearLaundryBtn').addEventListener('click', async () => {
             if (!confirm('Xóa tất cả bản ghi?')) return;
             try {
-                const { error } = await supabase.from('laundries').delete().neq('id', 0);
-                if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest('/laundries?id=neq.0', 'DELETE');
+                } else {
+                    localStorage.setItem('laundries', '[]');
+                }
                 loadLaundries();
             } catch (error) {
                 alert('❌ Lỗi: ' + error.message);
             }
         });
 
-        // ===== TAB DỌN PHÒNG =====
+        // ===== CLEANING FUNCTIONS =====
         document.getElementById('cleaningForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -793,9 +847,14 @@
             };
 
             try {
-                if (isSupabaseConfigured) {
-                    const { error } = await supabase.from('cleanings').insert([cleaning]);
-                    if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest('/cleanings', 'POST', cleaning);
+                } else {
+                    const cleanings = JSON.parse(localStorage.getItem('cleanings') || '[]');
+                    cleaning.id = Date.now();
+                    cleaning.created_at = new Date().toISOString();
+                    cleanings.push(cleaning);
+                    localStorage.setItem('cleanings', JSON.stringify(cleanings));
                 }
 
                 showMessage('cleaningMessage', '✅ Lưu thành công!', 'success');
@@ -808,13 +867,13 @@
 
         async function loadCleanings() {
             try {
-                if (!isSupabaseConfigured) {
-                    document.getElementById('cleaningList').innerHTML = '<div class="empty-message">Supabase chưa cấu hình. Dữ liệu sẽ lưu cục bộ.</div>';
-                    return;
-                }
+                let data;
 
-                const { data, error } = await supabase.from('cleanings').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
+                if (isApiConfigured) {
+                    data = await apiRequest('/cleanings?order=created_at.desc');
+                } else {
+                    data = JSON.parse(localStorage.getItem('cleanings') || '[]');
+                }
 
                 const list = document.getElementById('cleaningList');
                 const clearBtn = document.getElementById('clearCleaningBtn');
@@ -837,14 +896,20 @@
                 `).join('');
             } catch (error) {
                 console.error('Error loading cleanings:', error);
+                document.getElementById('cleaningList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
         }
 
         async function deleteCleaning(id) {
             if (!confirm('Xóa bản ghi này?')) return;
             try {
-                const { error } = await supabase.from('cleanings').delete().eq('id', id);
-                if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest(`/cleanings?id=eq.${id}`, 'DELETE');
+                } else {
+                    let cleanings = JSON.parse(localStorage.getItem('cleanings') || '[]');
+                    cleanings = cleanings.filter(c => c.id !== id);
+                    localStorage.setItem('cleanings', JSON.stringify(cleanings));
+                }
                 loadCleanings();
             } catch (error) {
                 alert('❌ Lỗi: ' + error.message);
@@ -854,8 +919,11 @@
         document.getElementById('clearCleaningBtn').addEventListener('click', async () => {
             if (!confirm('Xóa tất cả bản ghi?')) return;
             try {
-                const { error } = await supabase.from('cleanings').delete().neq('id', 0);
-                if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest('/cleanings?id=neq.0', 'DELETE');
+                } else {
+                    localStorage.setItem('cleanings', '[]');
+                }
                 loadCleanings();
             } catch (error) {
                 alert('❌ Lỗi: ' + error.message);
@@ -865,17 +933,20 @@
         document.getElementById('clearBookingBtn').addEventListener('click', async () => {
             if (!confirm('Xóa tất cả bản ghi?')) return;
             try {
-                const { error } = await supabase.from('bookings').delete().neq('id', 0);
-                if (error) throw error;
+                if (isApiConfigured) {
+                    await apiRequest('/bookings?id=neq.0', 'DELETE');
+                } else {
+                    localStorage.setItem('bookings', '[]');
+                }
                 loadBookings();
             } catch (error) {
                 alert('❌ Lỗi: ' + error.message);
             }
         });
 
-        // ===== KHỞI TẠO =====
-        window.addEventListener('load', () => {
-            initSupabase();
+        // ===== INITIALIZATION =====
+        window.addEventListener('load', async () => {
+            await testApiConnection();
             loadBookings();
             loadLaundries();
             loadCleanings();
