@@ -534,28 +534,32 @@
 
     <script>
         // ===== SUPABASE CONFIG =====
-        const SUPABASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co/rest/v1';
+        const SUPABASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
         let supabase = null;
         let isSupabaseConfigured = false;
 
         function initSupabase() {
-            if (SUPABASE_URL.includes('bwlrhewncykjvvjcwipu')) {
-                console.log('Supabase chưa cấu hình. Sử dụng localStorage.');
-                isSupabaseConfigured = false;
-                document.getElementById('configAlert').innerHTML = '💾 Chế độ Offline: Dữ liệu sẽ lưu cục bộ trên thiết bị của bạn.';
-            } else {
-                try {
-                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    isSupabaseConfigured = true;
-                    document.getElementById('configAlert').style.display = 'none';
-                    console.log('Supabase đã được cấu hình!');
-                } catch (error) {
-                    console.error('Lỗi kết nối Supabase:', error);
-                    isSupabaseConfigured = false;
-                    document.getElementById('configAlert').innerHTML = '⚠️ Không thể kết nối Supabase. Sử dụng chế độ Offline.';
-                }
-            }
+            if (SUPABASE_URL.includes('bwlrhewncykjvvjcwipu') || SUPABASE_ANON_KEY.includes('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI')) {
+    // tức là chưa thay giá trị mặc định
+    console.log('Supabase chưa cấu hình. Sử dụng localStorage.');
+    isSupabaseConfigured = false;
+    document.getElementById('configAlert').innerHTML =
+      '💾 Chế độ Offline: Dữ liệu sẽ lưu cục bộ trên thiết bị của bạn.';
+} else {
+    try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        isSupabaseConfigured = true;
+        document.getElementById('configAlert').style.display = 'none';
+        console.log('✅ Supabase đã được cấu hình thành công!');
+    } catch (error) {
+        console.error('Lỗi kết nối Supabase:', error);
+        isSupabaseConfigured = false;
+        document.getElementById('configAlert').innerHTML =
+          '⚠️ Không thể kết nối Supabase. Sử dụng chế độ Offline.';
+    }
+}
+
         }
 
         function showMessage(elementId, message, type = 'success') {
