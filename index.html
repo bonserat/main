@@ -423,7 +423,6 @@
                 <div class="history-list" id="bookingList">
                     <div class="empty-message">Chưa có dữ liệu</div>
                 </div>
-                <button class="btn-clear-all" id="clearBookingBtn" style="display: none;">🗑️ Xóa Tất Cả</button>
             </div>
         </div>
     </div>
@@ -706,7 +705,6 @@
                 }
 
                 const list = document.getElementById('bookingList');
-                const clearBtn = document.getElementById('clearBookingBtn');
 
                 if (!data || data.length === 0) {
                     list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
@@ -934,20 +932,6 @@
                     localStorage.setItem('cleanings', '[]');
                 }
                 loadCleanings();
-            } catch (error) {
-                alert('❌ Lỗi: ' + error.message);
-            }
-        });
-
-        document.getElementById('clearBookingBtn').addEventListener('click', async () => {
-            if (!confirm('Xóa tất cả bản ghi?')) return;
-            try {
-                if (isApiConfigured) {
-                    await apiRequest('/bookings?id=neq.0', 'DELETE');
-                } else {
-                    localStorage.setItem('bookings', '[]');
-                }
-                loadBookings();
             } catch (error) {
                 alert('❌ Lỗi: ' + error.message);
             }
