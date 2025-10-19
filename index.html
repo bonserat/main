@@ -543,11 +543,18 @@
             if (SUPABASE_URL.includes('bwlrhewncykjvvjcwipu')) {
                 console.log('Supabase chưa cấu hình. Sử dụng localStorage.');
                 isSupabaseConfigured = false;
+                document.getElementById('configAlert').innerHTML = '💾 Chế độ Offline: Dữ liệu sẽ lưu cục bộ trên thiết bị của bạn.';
             } else {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                isSupabaseConfigured = true;
-                document.getElementById('configAlert').style.display = 'none';
-                console.log('Supabase đã được cấu hình!');
+                try {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    isSupabaseConfigured = true;
+                    document.getElementById('configAlert').style.display = 'none';
+                    console.log('Supabase đã được cấu hình!');
+                } catch (error) {
+                    console.error('Lỗi kết nối Supabase:', error);
+                    isSupabaseConfigured = false;
+                    document.getElementById('configAlert').innerHTML = '⚠️ Không thể kết nối Supabase. Sử dụng chế độ Offline.';
+                }
             }
         }
 
