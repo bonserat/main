@@ -723,10 +723,11 @@
                 list.innerHTML = data.map(b => `
                     <div class="item">
                         <button class="btn-item-delete" type="button" onclick="deleteBooking(${b.id})">🗑️</button>
-                        <strong>${b.room}</strong><br>
-                        (${b.months_stay} tháng) (${b.check_in_date} → ${b.check_out_date})<br>
+                        <strong>${b.room} 91HXH</strong><br>
+                        HĐ ${b.months_stay} tháng (${b.check_in_date} → ${b.check_out_date})<br>
                         Giá: ${b.price_per_month}tr | Cọc: 1tt1<br>
-                        Tổng thanh toán: ${b.advancepayment || b.advance_payment || 0}tr (ttck) + ${b.cashpayment || b.cash_payment || 0}tr (tttm)<br>
+                        Cọc trước 1tr<br>
+                        Tổng thanh toán: ${b.advancepayment || b.advance_payment || 0}tr (ttck) và ${b.cashpayment || b.cash_payment || 0}tr (tttm)<br>
                         Sale: ${b.sale_name}
                         <div class="item-time">${formatDate(b.created_at)}</div>
                     </div>
