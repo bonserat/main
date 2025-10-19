@@ -576,15 +576,26 @@
 
         async function testApiConnection() {
             try {
-                await apiRequest('/bookings?limit=1');
-                isApiConfigured = true;
-                document.getElementById('apiStatus').textContent = '✅ Kết nối thành công';
-                document.getElementById('configAlert').style.background = '#d4edda';
-                document.getElementById('configAlert').style.borderColor = '#c3e6cb';
-                document.getElementById('configAlert').style.color = '#155724';
+                const response = await fetch(`${API_BASE_URL}/bookings?limit=1`, {
+                    headers: {
+                        'apikey': API_KEY,
+                        'Authorization': `Bearer ${API_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    isApiConfigured = true;
+                    document.getElementById('apiStatus').textContent = '✅ Kết nối thành công';
+                    document.getElementById('configAlert').style.background = '#d4edda';
+                    document.getElementById('configAlert').style.borderColor = '#c3e6cb';
+                    document.getElementById('configAlert').style.color = '#155724';
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
             } catch (error) {
                 isApiConfigured = false;
                 document.getElementById('apiStatus').textContent = '❌ Không kết nối được - Sử dụng localStorage';
+                document.getElementById('configAlert').innerHTML = '💾 Chế độ Offline: Dữ liệu lưu trên thiết bị của bạn';
                 console.error('API connection failed:', error);
             }
         }
@@ -661,8 +672,8 @@
                 check_out_date: document.getElementById('checkOutDate').value,
                 price_per_month: parseFloat(document.getElementById('monthlyPrice').value),
                 deposit: parseFloat(document.getElementById('deposit').value),
-                advance_payment: parseFloat(document.getElementById('advancePayment').value),
-                cash_payment: parseFloat(document.getElementById('cashPayment').value),
+                advancepayment: parseFloat(document.getElementById('advancePayment').value),
+                cashpayment: parseFloat(document.getElementById('cashPayment').value),
                 customer_name: document.getElementById('customerName').value,
                 sale_name: document.getElementById('saleName').value
             };
@@ -670,6 +681,7 @@
             try {
                 if (isApiConfigured) {
                     await apiRequest('/bookings', 'POST', booking);
+                    showMessage('bookingMessage', '✅ Lưu thành công!', 'success');
                 } else {
                     // Fallback to localStorage
                     const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
@@ -677,12 +689,13 @@
                     booking.created_at = new Date().toISOString();
                     bookings.push(booking);
                     localStorage.setItem('bookings', JSON.stringify(bookings));
+                    showMessage('bookingMessage', '✅ Lưu thành công (Offline)!', 'success');
                 }
 
-                showMessage('bookingMessage', '✅ Lưu thành công!', 'success');
                 document.getElementById('bookingForm').reset();
                 loadBookings();
             } catch (error) {
+                console.error('Submit error:', error);
                 showMessage('bookingMessage', '❌ Lỗi: ' + error.message, 'error');
             }
         });
@@ -713,7 +726,7 @@
                         <strong>${b.room}</strong> - ${b.customer_name}<br>
                         ${b.check_in_date} → ${b.check_out_date} (${b.months_stay} tháng)<br>
                         Giá: ${b.price_per_month}tr | Cọc: ${b.deposit}tr<br>
-                        Thanh toán: ${b.advance_payment}tr (ttck) + ${b.cash_payment}tr (tttm)<br>
+                        Thanh toán: ${b.advancepayment || b.advance_payment || 0}tr (ttck) + ${b.cashpayment || b.cash_payment || 0}tr (tttm)<br>
                         Sale: ${b.sale_name}
                         <div class="item-time">${formatDate(b.created_at)}</div>
                     </div>
