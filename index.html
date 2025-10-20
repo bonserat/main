@@ -882,7 +882,7 @@
                 } else {
                     data = JSON.parse(localStorage.getItem('cleanings') || '[]');
                 }
-
+                allCleaningData = data || [];
                 const list = document.getElementById('cleaningList');
 
                 if (!data || data.length === 0) {
