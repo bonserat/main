@@ -883,7 +883,6 @@
                     data = JSON.parse(localStorage.getItem('cleanings') || '[]');
                 }
                 allCleaningData = data || [];
-                displayCleanings(allCleaningData);
                 const list = document.getElementById('cleaningList');
 
                 if (!data || data.length === 0) {
