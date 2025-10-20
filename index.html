@@ -268,6 +268,45 @@
             font-style: italic;
         }
 
+        .btn-item-delete {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .item:hover .btn-item-delete {
+            opacity: 1;
+        }
+
+        .btn-item-delete:hover {
+            background: #c82333;
+        }
+
+        .btn-clear-all {
+            width: 100%;
+            padding: 12px;
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: auto;
+        }
+
+        .btn-clear-all:hover {
+            background: #f5c6cb;
+        }
+
         .empty-message {
             text-align: center;
             color: #999;
@@ -275,81 +314,10 @@
             font-style: italic;
         }
 
-        .filter-group {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .filter-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        .filter-group .form-group {
-            margin-bottom: 0;
-        }
-
-        .filter-group label {
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .filter-group input,
-        .filter-group select {
-            padding: 8px 10px;
-            font-size: 12px;
-        }
-
-        .btn-reset-filter {
-            padding: 8px 10px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-
-        .btn-reset-filter:hover {
-            background: #c82333;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-
-        .status-cleaned {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-cleaning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-uncleaned {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .filter-count {
-            font-size: 12px;
-            color: #667eea;
-            font-weight: 600;
+        .loading {
             text-align: center;
-            margin-bottom: 10px;
+            color: #667eea;
+            padding: 20px;
         }
 
         @media (max-width: 1200px) {
@@ -360,10 +328,6 @@
 
         @media (max-width: 600px) {
             .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .filter-row {
                 grid-template-columns: 1fr;
             }
         }
@@ -553,27 +517,6 @@
 
             <div class="history-container">
                 <h2>📋 Danh Sách Dọn Phòng</h2>
-                
-                <div class="filter-group">
-                    <div class="filter-count" id="filterCount"></div>
-                    <div class="filter-row">
-                        <div class="form-group">
-                            <label for="filterRoom">🔍 Số Phòng</label>
-                            <input type="text" id="filterRoom" placeholder="VD: P902" onkeyup="filterCleanings()">
-                        </div>
-                        <div class="form-group">
-                            <label for="filterCleanStatus">Trạng Thái</label>
-                            <select id="filterCleanStatus" onchange="filterCleanings()">
-                                <option value="">-- Tất cả --</option>
-                                <option value="Đã dọn">✅ Đã dọn</option>
-                                <option value="Đang dọn">⏳ Đang dọn</option>
-                                <option value="Chưa dọn">❌ Chưa dọn</option>
-                            </select>
-                        </div>
-                        <button type="button" class="btn-reset-filter" onclick="resetCleaningFilter()">🔄 Xóa Lọc</button>
-                    </div>
-                </div>
-
                 <div class="history-list" id="cleaningList">
                     <div class="empty-message">Chưa có dữ liệu</div>
                 </div>
@@ -582,11 +525,12 @@
     </div>
 
     <script>
+        // ===== REST API CONFIG =====
         const API_BASE_URL = 'https://bwlrhewncykjvvjcwipu.supabase.co/rest/v1';
         const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
         let isApiConfigured = false;
-        let allCleaningData = [];
 
+        // ===== API HELPER FUNCTIONS =====
         async function apiRequest(endpoint, method = 'GET', body = null) {
             const headers = {
                 'apikey': API_KEY,
@@ -645,9 +589,11 @@
                 isApiConfigured = false;
                 document.getElementById('apiStatus').textContent = '❌ Không kết nối được - Sử dụng localStorage';
                 document.getElementById('configAlert').innerHTML = '💾 Chế độ Offline: Dữ liệu lưu trên thiết bị của bạn';
+                console.error('API connection failed:', error);
             }
         }
 
+        // ===== UTILITY FUNCTIONS =====
         function showMessage(elementId, message, type = 'success') {
             const el = document.getElementById(elementId);
             el.textContent = message;
@@ -705,20 +651,7 @@
             return date.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' });
         }
 
-        function getStatusBadgeClass(status) {
-            switch(status) {
-                case 'Đã dọn':
-                    return 'status-cleaned';
-                case 'Đang dọn':
-                    return 'status-cleaning';
-                case 'Chưa dọn':
-                    return 'status-uncleaned';
-                default:
-                    return '';
-            }
-        }
-
-        // BOOKING
+        // ===== BOOKING FUNCTIONS =====
         document.getElementById('checkInDate').addEventListener('change', calculateCheckOutDate);
         document.getElementById('months').addEventListener('input', calculateCheckOutDate);
 
@@ -735,6 +668,73 @@
                 advancepayment: parseFloat(document.getElementById('advancePayment').value),
                 cashpayment: parseFloat(document.getElementById('cashPayment').value),
                 sale_name: document.getElementById('saleName').value
+            };
+
+            try {
+                if (isApiConfigured) {
+                    await apiRequest('/bookings', 'POST', booking);
+                    showMessage('bookingMessage', '✅ Lưu thành công!', 'success');
+                } else {
+                    // Fallback to localStorage
+                    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+                    booking.id = Date.now();
+                    booking.created_at = new Date().toISOString();
+                    bookings.push(booking);
+                    localStorage.setItem('bookings', JSON.stringify(bookings));
+                    showMessage('bookingMessage', '✅ Lưu thành công (Offline)!', 'success');
+                }
+
+                document.getElementById('bookingForm').reset();
+                loadBookings();
+            } catch (error) {
+                console.error('Submit error:', error);
+                showMessage('bookingMessage', '❌ Lỗi: ' + error.message, 'error');
+            }
+        });
+
+        async function loadBookings() {
+            try {
+                let data;
+
+                if (isApiConfigured) {
+                    data = await apiRequest('/bookings?order=created_at.desc');
+                } else {
+                    data = JSON.parse(localStorage.getItem('bookings') || '[]');
+                }
+
+                const list = document.getElementById('bookingList');
+
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
+                    return;
+                }
+
+                list.innerHTML = data.map(b => `
+                    <div class="item">
+                        <strong>${b.room} 91HXH</strong><br>
+                        HĐ ${b.months_stay} tháng (${b.check_in_date} → ${b.check_out_date})<br>
+                        Giá: ${b.price_per_month}tr | Cọc: 1tt1<br>
+                        Cọc trước 1tr<br>
+                        Tổng thanh toán: ${b.advancepayment || b.advance_payment || 0}tr (ttck) và ${b.cashpayment || b.cash_payment || 0}tr (tttm)<br>
+                        Sale: ${b.sale_name}
+                        <div class="item-time">${formatDate(b.created_at)}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                document.getElementById('bookingList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
+            }
+        }
+
+        // ===== LAUNDRY FUNCTIONS =====
+        document.getElementById('laundryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const laundry = {
+                laundry_date: document.getElementById('laundryDate').value,
+                room: document.getElementById('laundryRoom').value,
+                weight: parseFloat(document.getElementById('laundryWeight').value),
+                notes: document.getElementById('laundryNotes').value || null
             };
 
             try {
@@ -782,11 +782,12 @@
                     </div>
                 `).join('');
             } catch (error) {
+                console.error('Error loading laundries:', error);
                 document.getElementById('laundryList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
         }
 
-        // CLEANING
+        // ===== CLEANING FUNCTIONS =====
         document.getElementById('cleaningForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -826,141 +827,39 @@
                     data = JSON.parse(localStorage.getItem('cleanings') || '[]');
                 }
 
-                allCleaningData = data || [];
-                displayCleanings(allCleaningData);
-            } catch (error) {
-                document.getElementById('cleaningList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
-            }
-        }
-
-        function displayCleanings(data) {
-            const list = document.getElementById('cleaningList');
-
-            if (!data || data.length === 0) {
-                list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
-                updateFilterCount(0, allCleaningData.length);
-                return;
-            }
-
-            list.innerHTML = data.map(c => `
-                <div class="item">
-                    <strong>📅 ${formatDate(c.cleaning_date)}</strong><br>
-                    🚪 Phòng: <strong>${c.room}</strong><br>
-                    <span class="status-badge ${getStatusBadgeClass(c.status)}">${c.status}</span><br>
-                    ${c.notes ? `📝 Ghi chú: ${c.notes}` : ''}
-                    <div class="item-time">${formatDate(c.created_at)}</div>
-                </div>
-            `).join('');
-
-            updateFilterCount(data.length, allCleaningData.length);
-        }
-
-        function filterCleanings() {
-            const roomFilter = document.getElementById('filterRoom').value.toLowerCase().trim();
-            const statusFilter = document.getElementById('filterCleanStatus').value;
-
-            let filtered = allCleaningData;
-
-            if (roomFilter) {
-                filtered = filtered.filter(c => c.room.toLowerCase().includes(roomFilter));
-            }
-
-            if (statusFilter) {
-                filtered = filtered.filter(c => c.status === statusFilter);
-            }
-
-            displayCleanings(filtered);
-        }
-
-        function resetCleaningFilter() {
-            document.getElementById('filterRoom').value = '';
-            document.getElementById('filterCleanStatus').value = '';
-            displayCleanings(allCleaningData);
-        }
-
-        function updateFilterCount(shown, total) {
-            const countEl = document.getElementById('filterCount');
-            if (shown === total) {
-                countEl.textContent = `📊 Tổng cộng: ${total} phòng`;
-            } else {
-                countEl.textContent = `📊 Hiển thị: ${shown}/${total} phòng`;
-            }
-        }
-
-        // INIT
-        window.addEventListener('load', async () => {
-            await testApiConnection();
-            loadBookings();
-            loadLaundries();
-            loadCleanings();
-
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('laundryDate').value = today;
-            document.getElementById('cleaningDate').value = today;
-        });
-    </script>
-</body>
-</html>isApiConfigured) {
-                    await apiRequest('/bookings', 'POST', booking);
-                    showMessage('bookingMessage', '✅ Lưu thành công!', 'success');
-                } else {
-                    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-                    booking.id = Date.now();
-                    booking.created_at = new Date().toISOString();
-                    bookings.push(booking);
-                    localStorage.setItem('bookings', JSON.stringify(bookings));
-                    showMessage('bookingMessage', '✅ Lưu thành công (Offline)!', 'success');
-                }
-
-                document.getElementById('bookingForm').reset();
-                loadBookings();
-            } catch (error) {
-                showMessage('bookingMessage', '❌ Lỗi: ' + error.message, 'error');
-            }
-        });
-
-        async function loadBookings() {
-            try {
-                let data;
-
-                if (isApiConfigured) {
-                    data = await apiRequest('/bookings?order=created_at.desc');
-                } else {
-                    data = JSON.parse(localStorage.getItem('bookings') || '[]');
-                }
-
-                const list = document.getElementById('bookingList');
+                const list = document.getElementById('cleaningList');
 
                 if (!data || data.length === 0) {
                     list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
                     return;
                 }
 
-                list.innerHTML = data.map(b => `
+                list.innerHTML = data.map(c => `
                     <div class="item">
-                        <strong>${b.room} 91HXH</strong><br>
-                        HĐ ${b.months_stay} tháng (${b.check_in_date} → ${b.check_out_date})<br>
-                        Giá: ${b.price_per_month}tr | Cọc: 1tt1<br>
-                        Tổng thanh toán: ${b.advancepayment}tr (ttck) và ${b.cashpayment}tr (tttm)<br>
-                        Sale: ${b.sale_name}
-                        <div class="item-time">${formatDate(b.created_at)}</div>
+                        <strong>📅 ${formatDate(c.cleaning_date)}</strong><br>
+                        🚪 Phòng: ${c.room} | ${c.status}<br>
+                        ${c.notes ? `📝 Ghi chú: ${c.notes}` : ''}
+                        <div class="item-time">${formatDate(c.created_at)}</div>
                     </div>
                 `).join('');
             } catch (error) {
-                document.getElementById('bookingList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
+                console.error('Error loading cleanings:', error);
+                document.getElementById('cleaningList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
         }
 
-        // LAUNDRY
-        document.getElementById('laundryForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // ===== INITIALIZATION =====
+        window.addEventListener('load', async () => {
+            await testApiConnection();
+            loadBookings();
+            loadLaundries();
+            loadCleanings();
 
-            const laundry = {
-                laundry_date: document.getElementById('laundryDate').value,
-                room: document.getElementById('laundryRoom').value,
-                weight: parseFloat(document.getElementById('laundryWeight').value),
-                notes: document.getElementById('laundryNotes').value || null
-            };
-
-            try {
-                if (
+            // Set today's date for date inputs
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('laundryDate').value = today;
+            document.getElementById('cleaningDate').value = today;
+        });
+    </script>
+</body>
+</html>
