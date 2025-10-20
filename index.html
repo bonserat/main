@@ -517,6 +517,24 @@
 
             <div class="history-container">
                 <h2>📋 Danh Sách Dọn Phòng</h2>
+                <div class="filter-group">
+                    <div class="filter-count" id="filterCount"></div>
+                    <div class="filter-row">
+                        <div class="form-group">
+                            <label for="filterRoom">🔍 Số Phòng</label>
+                            <input type="text" id="filterRoom" placeholder="VD: P902" onkeyup="filterCleanings()">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterCleanStatus">Trạng Thái</label>
+                            <select id="filterCleanStatus" onchange="filterCleanings()">
+                                <option value="">-- Tất cả --</option>
+                                <option value="Đã dọn">✅ Đã dọn</option>
+                                <option value="Đang dọn">⏳ Đang dọn</option>
+                                <option value="Chưa dọn">❌ Chưa dọn</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="history-list" id="cleaningList">
                     <div class="empty-message">Chưa có dữ liệu</div>
                 </div>
