@@ -860,7 +860,25 @@
                         <div class="item-time">${formatDate(c.created_at)}</div>
                     </div>
                 `).join('');
-            } catch (error) {
+            } 
+                    function filterCleanings() {
+            const roomFilter = document.getElementById('filterRoom').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('filterCleanStatus').value;
+
+            let filtered = allCleaningData;
+
+            if (roomFilter) {
+                filtered = filtered.filter(c => c.room.toLowerCase().includes(roomFilter));
+            }
+
+            if (statusFilter) {
+                filtered = filtered.filter(c => c.status === statusFilter);
+            }
+
+            displayCleanings(filtered);
+        }
+            
+            catch (error) {
                 console.error('Error loading cleanings:', error);
                 document.getElementById('cleaningList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
