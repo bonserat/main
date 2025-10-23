@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Khách Sạn</title>
+    <title>Quản Lý Khách Sạn - Premium</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -12,136 +14,273 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a4d3c 0%, #134e3a 50%, #1e6f5c 100%);
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(46, 213, 115, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(52, 211, 153, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            animation: bgPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
         }
 
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 48px;
+            font-weight: 800;
             margin-bottom: 10px;
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            text-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(20deg); }
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 300;
+            letter-spacing: 2px;
         }
 
         .config-alert {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            color: #856404;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
             text-align: center;
-            font-weight: 600;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 30px;
             justify-content: center;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
 
         .tab-btn {
-            padding: 12px 25px;
+            padding: 15px 35px;
             border: none;
-            border-radius: 8px;
-            background: white;
-            color: #333;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 16px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .tab-btn:hover::before {
+            left: 100%;
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .tab-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
         }
 
         .tab-content {
             display: none;
+            animation: fadeInUp 0.5s ease;
         }
 
         .tab-content.active {
             display: block;
         }
 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 1400px;
+            gap: 25px;
+            max-width: 1600px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+            padding: 45px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 80px rgba(16, 185, 129, 0.4);
         }
 
         .form-section {
             max-height: 80vh;
             overflow-y: auto;
-            padding-right: 10px;
+            padding-right: 15px;
         }
 
         .form-section::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
+        }
+
+        .form-section::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
         }
 
         .form-section::-webkit-scrollbar-thumb {
-            background: #888;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             border-radius: 10px;
         }
 
         h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 28px;
             text-align: center;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 2px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            animation: slideInLeft 0.5s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         label {
             display: block;
-            color: #555;
+            color: #4a5568;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
             font-family: inherit;
+            background: white;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+            transform: translateY(-2px);
         }
 
         .form-row {
@@ -151,186 +290,234 @@
         }
 
         .section-title {
-            background: #f5f5f5;
-            padding: 12px 15px;
-            margin: 25px 0 15px 0;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 14px 20px;
+            margin: 30px 0 20px 0;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            }
+            50% {
+                box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+            }
         }
 
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 30px;
+            gap: 15px;
+            margin-top: 35px;
         }
 
         button {
             flex: 1;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
 
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
         }
 
         .btn-reset {
-            background: #f0f0f0;
-            color: #333;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
         }
 
         .btn-reset:hover {
-            background: #e0e0e0;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.4);
         }
 
         .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-top: 20px;
             font-size: 14px;
             text-align: center;
+            font-weight: 600;
+            animation: bounceIn 0.5s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: linear-gradient(135deg, #6ee7b7 0%, #34d399 100%);
+            color: #064e3b;
+            box-shadow: 0 5px 20px rgba(110, 231, 183, 0.4);
         }
 
         .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
         }
 
         .history-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+            padding: 45px;
             display: flex;
             flex-direction: column;
             height: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .history-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 80px rgba(16, 185, 129, 0.4);
         }
 
         .history-list {
             flex: 1;
             overflow-y: auto;
-            padding-right: 10px;
+            padding-right: 15px;
         }
 
         .history-list::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
         }
 
         .history-list::-webkit-scrollbar-thumb {
-            background: #888;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             border-radius: 10px;
         }
 
         .item {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 4px solid #667eea;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #555;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 5px solid #10b981;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #4a5568;
             word-break: break-word;
             position: relative;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            animation: slideInRight 0.5s ease;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .item:hover {
-            background: #f0f0f0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+            transform: translateX(-5px);
+            border-left-width: 8px;
+        }
+
+        .item strong {
+            color: #2d3748;
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
         }
 
         .item-time {
-            font-size: 11px;
-            color: #999;
-            margin-top: 8px;
-            font-style: italic;
-        }
-
-        .btn-item-delete {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
             font-size: 12px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .item:hover .btn-item-delete {
-            opacity: 1;
-        }
-
-        .btn-item-delete:hover {
-            background: #c82333;
-        }
-
-        .btn-clear-all {
-            width: 100%;
-            padding: 12px;
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: auto;
-        }
-
-        .btn-clear-all:hover {
-            background: #f5c6cb;
+            color: #a0aec0;
+            margin-top: 12px;
+            font-style: italic;
         }
 
         .empty-message {
             text-align: center;
-            color: #999;
-            padding: 40px 20px;
+            color: #a0aec0;
+            padding: 60px 20px;
             font-style: italic;
-        }
-
-        .loading {
-            text-align: center;
-            color: #667eea;
-            padding: 20px;
+            font-size: 16px;
         }
 
         .filter-section {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.2);
         }
 
         .filter-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 15px;
             align-items: flex-end;
         }
 
@@ -338,38 +525,71 @@
             margin-bottom: 0;
         }
 
-        .filter-section label {
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .filter-section input,
-        .filter-section select {
-            padding: 8px 10px;
-            font-size: 12px;
-        }
-
         .btn-reset-filter {
-            padding: 8px 10px;
-            background: #6c757d;
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
+            font-weight: 700;
+            font-size: 13px;
             width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn-reset-filter:hover {
-            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
         }
 
         .filter-count {
+            font-size: 14px;
+            color: #059669;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+        }
+
+        .stats-card {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .stat-label {
             font-size: 12px;
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 10px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         @media (max-width: 1200px) {
@@ -386,21 +606,68 @@
             .filter-row {
                 grid-template-columns: 1fr;
             }
+
+            .stats-card {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .container, .history-container {
+                padding: 25px;
+            }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(110, 231, 183, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10%, 90% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-100vh) translateX(100px);
+            }
         }
     </style>
 </head>
 <body>
+    <div class="floating-particles" id="particles"></div>
+
     <div class="header">
-        <h1>🏨 Quản Lý Khách Sạn</h1>
+        <h1>🏨 QUẢN LÝ KHÁCH SẠN</h1>
+        <div class="subtitle">PREMIUM MANAGEMENT SYSTEM</div>
         <div class="config-alert" id="configAlert">
             ⚙️ Cấu hình API: <span id="apiStatus">Đang kiểm tra...</span>
         </div>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('booking')">📋 Đặt Phòng</button>
-        <button class="tab-btn" onclick="switchTab('laundry')">👕 Giặt Ủi</button>
-        <button class="tab-btn" onclick="switchTab('cleaning')">🧹 Dọn Phòng</button>
+        <button class="tab-btn active" onclick="switchTab('booking')">📋 ĐẶT PHÒNG</button>
+        <button class="tab-btn" onclick="switchTab('laundry')">👕 GIẶT ỦI</button>
+        <button class="tab-btn" onclick="switchTab('cleaning')">🧹 DỌN PHÒNG</button>
     </div>
 
     <!-- TAB ĐẶT PHÒNG -->
@@ -433,7 +700,7 @@
                         </div>
                     </div>
 
-                    <div class="section-title">💰 THÔNG TIN GIÁ CẢ (Triệu VNĐ)</div>
+                    <div class="section-title">💰 THÔNG TIN GIÁ CẢ</div>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -475,7 +742,37 @@
             </div>
 
             <div class="history-container">
-                <h2>📋 Danh Sách</h2>
+                <h2>📋 Danh Sách Đặt Phòng</h2>
+                <div class="stats-card">
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalBookings">0</span>
+                        <span class="stat-label">Tổng HĐ</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalRevenue">0</span>
+                        <span class="stat-label">Doanh Thu (tr)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="avgMonths">0</span>
+                        <span class="stat-label">Trung Bình Tháng</span>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-count" id="filterCountBooking"></div>
+                    <div class="filter-row">
+                        <div class="form-group">
+                            <label for="filterBookingRoom">🔍 Số Phòng</label>
+                            <input type="text" id="filterBookingRoom" placeholder="VD: P902" onkeyup="filterBookings()">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterBookingSale">👤 Người Sale</label>
+                            <input type="text" id="filterBookingSale" placeholder="Tên sale" onkeyup="filterBookings()">
+                        </div>
+                    </div>
+                    <button type="button" class="btn-reset-filter" onclick="resetBookingFilter()">🔄 Xóa Lọc</button>
+                </div>
+
                 <div class="history-list" id="bookingList">
                     <div class="empty-message">Chưa có dữ liệu</div>
                 </div>
@@ -522,6 +819,36 @@
 
             <div class="history-container">
                 <h2>📋 Danh Sách Giặt Ủi</h2>
+                <div class="stats-card">
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalLaundries">0</span>
+                        <span class="stat-label">Tổng Lần</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalWeight">0</span>
+                        <span class="stat-label">Tổng KG</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="avgWeight">0</span>
+                        <span class="stat-label">TB KG/Lần</span>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-count" id="filterCountLaundry"></div>
+                    <div class="filter-row">
+                        <div class="form-group">
+                            <label for="filterLaundryRoom">🔍 Số Phòng</label>
+                            <input type="text" id="filterLaundryRoom" placeholder="VD: P902" onkeyup="filterLaundries()">
+                        </div>
+                        <div class="form-group">
+                            <label for="filterLaundryDate">📅 Ngày Giặt</label>
+                            <input type="date" id="filterLaundryDate" onchange="filterLaundries()">
+                        </div>
+                    </div>
+                    <button type="button" class="btn-reset-filter" onclick="resetLaundryFilter()">🔄 Xóa Lọc</button>
+                </div>
+
                 <div class="history-list" id="laundryList">
                     <div class="empty-message">Chưa có dữ liệu</div>
                 </div>
@@ -607,6 +934,21 @@
         const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3bHJoZXduY3lranZ2amN3aXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3NTY5NzUsImV4cCI6MjA3NjMzMjk3NX0.BUuUvO081PjWT7eejulWFZPAj0zaWO9EkulxYJVnjbI';
         let isApiConfigured = false;
         let allCleaningData = [];
+        let allBookingData = [];
+        let allLaundryData = [];
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
 
         // ===== API HELPER FUNCTIONS =====
         async function apiRequest(endpoint, method = 'GET', body = null) {
@@ -657,16 +999,17 @@
                 if (response.ok) {
                     isApiConfigured = true;
                     document.getElementById('apiStatus').textContent = '✅ Kết nối thành công';
-                    document.getElementById('configAlert').style.background = '#d4edda';
-                    document.getElementById('configAlert').style.borderColor = '#c3e6cb';
-                    document.getElementById('configAlert').style.color = '#155724';
+                    document.getElementById('configAlert').style.background = 'rgba(16, 185, 129, 0.2)';
+                    document.getElementById('configAlert').style.borderColor = 'rgba(16, 185, 129, 0.4)';
                 } else {
                     throw new Error(`HTTP ${response.status}`);
                 }
             } catch (error) {
                 isApiConfigured = false;
-                document.getElementById('apiStatus').textContent = '❌ Không kết nối được - Sử dụng localStorage';
+                document.getElementById('apiStatus').textContent = '❌ Không kết nối được';
                 document.getElementById('configAlert').innerHTML = '💾 Chế độ Offline: Dữ liệu lưu trên thiết bị của bạn';
+                document.getElementById('configAlert').style.background = 'rgba(245, 158, 11, 0.2)';
+                document.getElementById('configAlert').style.borderColor = 'rgba(245, 158, 11, 0.4)';
                 console.error('API connection failed:', error);
             }
         }
@@ -779,28 +1122,81 @@
                     data = JSON.parse(localStorage.getItem('bookings') || '[]');
                 }
 
-                const list = document.getElementById('bookingList');
-
-                if (!data || data.length === 0) {
-                    list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
-                    return;
-                }
-
-                list.innerHTML = data.map(b => `
-                    <div class="item">
-                        <strong>${b.room} 91HXH</strong><br>
-                        HĐ ${b.months_stay} tháng (${b.check_in_date} → ${b.check_out_date})<br>
-                        Giá: ${b.price_per_month}tr | Cọc: 1tt1<br>
-                        Cọc trước 1tr<br>
-                        Tổng thanh toán: ${b.advancepayment || b.advance_payment || 0}tr (ttck) và ${b.cashpayment || b.cash_payment || 0}tr (tttm)<br>
-                        Sale: ${b.sale_name}
-                        <div class="item-time">${formatDate(b.created_at)}</div>
-                    </div>
-                `).join('');
+                allBookingData = data || [];
+                displayBookings(allBookingData);
             } catch (error) {
                 console.error('Error loading bookings:', error);
                 document.getElementById('bookingList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
+        }
+
+        function displayBookings(data) {
+            const list = document.getElementById('bookingList');
+
+            if (!data || data.length === 0) {
+                list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
+                updateBookingStats(0, 0, 0);
+                updateFilterCountBooking(0, allBookingData.length);
+                return;
+            }
+
+            list.innerHTML = data.map(b => `
+                <div class="item">
+                    <strong>${b.room} 91HXH</strong><br>
+                    HĐ ${b.months_stay} tháng (${b.check_in_date} → ${b.check_out_date})<br>
+                    Giá: ${b.price_per_month}tr | Cọc: 1tt1<br>
+                    Cọc trước 1tr<br>
+                    Tổng thanh toán: ${b.advancepayment || b.advance_payment || 0}tr (ttck) và ${b.cashpayment || b.cash_payment || 0}tr (tttm)<br>
+                    Sale: ${b.sale_name}
+                    <div class="item-time">${formatDate(b.created_at)}</div>
+                </div>
+            `).join('');
+
+            // Calculate stats
+            const totalBookings = data.length;
+            const totalRevenue = data.reduce((sum, b) => sum + (parseFloat(b.advancepayment || b.advance_payment || 0) + parseFloat(b.cashpayment || b.cash_payment || 0)), 0);
+            const avgMonths = data.reduce((sum, b) => sum + (b.months_stay || 0), 0) / totalBookings;
+
+            updateBookingStats(totalBookings, totalRevenue.toFixed(1), avgMonths.toFixed(1));
+            updateFilterCountBooking(data.length, allBookingData.length);
+        }
+
+        function filterBookings() {
+            const roomFilter = document.getElementById('filterBookingRoom').value.toLowerCase().trim();
+            const saleFilter = document.getElementById('filterBookingSale').value.toLowerCase().trim();
+
+            let filtered = allBookingData;
+
+            if (roomFilter) {
+                filtered = filtered.filter(b => b.room.toLowerCase().includes(roomFilter));
+            }
+
+            if (saleFilter) {
+                filtered = filtered.filter(b => b.sale_name.toLowerCase().includes(saleFilter));
+            }
+
+            displayBookings(filtered);
+        }
+
+        function resetBookingFilter() {
+            document.getElementById('filterBookingRoom').value = '';
+            document.getElementById('filterBookingSale').value = '';
+            displayBookings(allBookingData);
+        }
+
+        function updateFilterCountBooking(shown, total) {
+            const countEl = document.getElementById('filterCountBooking');
+            if (shown === total) {
+                countEl.textContent = `📊 Tổng cộng: ${total} hợp đồng`;
+            } else {
+                countEl.textContent = `📊 Hiển thị: ${shown}/${total} hợp đồng`;
+            }
+        }
+
+        function updateBookingStats(total, revenue, avgMonths) {
+            document.getElementById('totalBookings').textContent = total;
+            document.getElementById('totalRevenue').textContent = revenue;
+            document.getElementById('avgMonths').textContent = avgMonths;
         }
 
         // ===== LAUNDRY FUNCTIONS =====
@@ -843,25 +1239,78 @@
                     data = JSON.parse(localStorage.getItem('laundries') || '[]');
                 }
 
-                const list = document.getElementById('laundryList');
-
-                if (!data || data.length === 0) {
-                    list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
-                    return;
-                }
-
-                list.innerHTML = data.map(l => `
-                    <div class="item">
-                        <strong>📅 ${formatDate(l.laundry_date)}</strong><br>
-                        🚪 Phòng: ${l.room} | ⚖️ Cân nặng: ${l.weight} kg<br>
-                        ${l.notes ? `📝 Ghi chú: ${l.notes}` : ''}
-                        <div class="item-time">${formatDate(l.created_at)}</div>
-                    </div>
-                `).join('');
+                allLaundryData = data || [];
+                displayLaundries(allLaundryData);
             } catch (error) {
                 console.error('Error loading laundries:', error);
                 document.getElementById('laundryList').innerHTML = '<div class="empty-message">Lỗi tải dữ liệu</div>';
             }
+        }
+
+        function displayLaundries(data) {
+            const list = document.getElementById('laundryList');
+
+            if (!data || data.length === 0) {
+                list.innerHTML = '<div class="empty-message">Chưa có dữ liệu</div>';
+                updateLaundryStats(0, 0, 0);
+                updateFilterCountLaundry(0, allLaundryData.length);
+                return;
+            }
+
+            list.innerHTML = data.map(l => `
+                <div class="item">
+                    <strong>📅 ${formatDate(l.laundry_date)}</strong><br>
+                    🚪 Phòng: ${l.room} | ⚖️ Cân nặng: ${l.weight} kg<br>
+                    ${l.notes ? `📝 Ghi chú: ${l.notes}` : ''}
+                    <div class="item-time">${formatDate(l.created_at)}</div>
+                </div>
+            `).join('');
+
+            // Calculate stats
+            const totalLaundries = data.length;
+            const totalWeight = data.reduce((sum, l) => sum + (parseFloat(l.weight) || 0), 0);
+            const avgWeight = totalWeight / totalLaundries;
+
+            updateLaundryStats(totalLaundries, totalWeight.toFixed(1), avgWeight.toFixed(1));
+            updateFilterCountLaundry(data.length, allLaundryData.length);
+        }
+
+        function filterLaundries() {
+            const roomFilter = document.getElementById('filterLaundryRoom').value.toLowerCase().trim();
+            const dateFilter = document.getElementById('filterLaundryDate').value;
+
+            let filtered = allLaundryData;
+
+            if (roomFilter) {
+                filtered = filtered.filter(l => l.room.toLowerCase().includes(roomFilter));
+            }
+
+            if (dateFilter) {
+                filtered = filtered.filter(l => l.laundry_date === dateFilter);
+            }
+
+            displayLaundries(filtered);
+        }
+
+        function resetLaundryFilter() {
+            document.getElementById('filterLaundryRoom').value = '';
+            document.getElementById('filterLaundryDate').value = '';
+            displayLaundries(allLaundryData);
+        }
+
+        function updateFilterCountLaundry(shown, total) {
+            const countEl = document.getElementById('filterCountLaundry');
+            if (shown === total) {
+                countEl.textContent = `📊 Tổng cộng: ${total} lần giặt`;
+            } else {
+                countEl.textContent = `📊 Hiển thị: ${shown}/${total} lần giặt`;
+            }
+        }
+
+        function updateLaundryStats(total, totalWeight, avgWeight) {
+            document.getElementById('totalLaundries').textContent = total;
+            document.getElementById('totalWeight').textContent = totalWeight;
+            document.getElementById('avgWeight').textContent = avgWeight;
         }
 
         // ===== CLEANING FUNCTIONS =====
@@ -967,6 +1416,7 @@
 
         // ===== INITIALIZATION =====
         window.addEventListener('load', async () => {
+            createParticles();
             await testApiConnection();
             loadBookings();
             loadLaundries();
@@ -977,3 +1427,5 @@
             document.getElementById('cleaningDate').value = today;
         });
     </script>
+</body>
+</html>
