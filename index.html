@@ -17,7 +17,7 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #0a4d3c 0%, #134e3a 50%, #1e6f5c 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
             position: relative;
             overflow-x: hidden;
         }
@@ -45,15 +45,15 @@
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             position: relative;
             z-index: 1;
         }
 
         .header h1 {
-            font-size: 48px;
+            font-size: 32px;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -68,10 +68,10 @@
         }
 
         .header .subtitle {
-            font-size: 16px;
+            font-size: 12px;
             opacity: 0.9;
             font-weight: 300;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
         }
 
         .config-alert {
@@ -79,13 +79,14 @@
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
             text-align: center;
             font-weight: 500;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             animation: slideDown 0.5s ease;
+            font-size: 13px;
         }
 
         @keyframes slideDown {
@@ -101,8 +102,8 @@
 
         .tabs {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 15px;
             justify-content: center;
             flex-wrap: wrap;
             position: relative;
@@ -110,16 +111,16 @@
         }
 
         .tab-btn {
-            padding: 15px 35px;
+            padding: 10px 25px;
             border: none;
-            border-radius: 15px;
+            border-radius: 12px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             color: white;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 16px;
+            font-size: 14px;
             position: relative;
             overflow: hidden;
             border: 2px solid rgba(255, 255, 255, 0.1);
@@ -175,7 +176,7 @@
         .wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            gap: 15px;
             max-width: 1600px;
             margin: 0 auto;
             position: relative;
@@ -183,12 +184,11 @@
         }
 
         .container {
-            min-height: 1500px;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-radius: 25px;
+            border-radius: 20px;
             box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
-            padding: 45px;
+            padding: 25px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -199,9 +199,9 @@
         }
 
         .form-section {
-            max-height: 80vh;
+            max-height: 65vh;
             overflow-y: auto;
-            padding-right: 15px;
+            padding-right: 10px;
         }
 
         .form-section::-webkit-scrollbar {
@@ -220,12 +220,12 @@
 
         h2 {
             color: #2d3748;
-            margin-bottom: 30px;
-            font-size: 28px;
+            margin-bottom: 20px;
+            font-size: 22px;
             text-align: center;
             font-weight: 700;
             position: relative;
-            padding-bottom: 15px;
+            padding-bottom: 12px;
         }
 
         h2::after {
@@ -234,14 +234,14 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
+            width: 50px;
+            height: 3px;
             background: linear-gradient(90deg, #10b981, #059669);
             border-radius: 2px;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             animation: slideInLeft 0.5s ease;
         }
 
@@ -260,18 +260,18 @@
             display: block;
             color: #4a5568;
             font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 14px;
+            margin-bottom: 6px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 14px 18px;
+            padding: 10px 12px;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 15px;
+            border-radius: 10px;
+            font-size: 13px;
             transition: all 0.3s ease;
             font-family: inherit;
             background: white;
@@ -287,17 +287,17 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 12px;
         }
 
         .section-title {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 14px 20px;
-            margin: 30px 0 20px 0;
-            border-radius: 12px;
+            padding: 10px 15px;
+            margin: 20px 0 15px 0;
+            border-radius: 10px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
@@ -315,23 +315,23 @@
 
         .button-group {
             display: flex;
-            gap: 15px;
-            margin-top: 35px;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         button {
             flex: 1;
-            padding: 16px;
+            padding: 12px;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         button::before {
@@ -375,10 +375,10 @@
         }
 
         .message {
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-size: 14px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 13px;
             text-align: center;
             font-weight: 600;
             animation: bounceIn 0.5s ease;
@@ -416,9 +416,9 @@
         .history-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-radius: 25px;
+            border-radius: 20px;
             box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
-            padding: 45px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
             height: 100%;
@@ -434,11 +434,11 @@
         .history-list {
             flex: 1;
             overflow-y: auto;
-            padding-right: 15px;
+            padding-right: 10px;
         }
 
         .history-list::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         .history-list::-webkit-scrollbar-track {
@@ -453,12 +453,12 @@
 
         .item {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            border-left: 5px solid #10b981;
-            font-size: 14px;
-            line-height: 1.8;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #10b981;
+            font-size: 12px;
+            line-height: 1.6;
             color: #4a5568;
             word-break: break-word;
             position: relative;
@@ -480,45 +480,45 @@
 
         .item:hover {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
-            transform: translateX(-5px);
-            border-left-width: 8px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2);
+            transform: translateX(-3px);
+            border-left-width: 6px;
         }
 
         .item strong {
             color: #2d3748;
-            font-size: 16px;
+            font-size: 13px;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .item-time {
-            font-size: 12px;
+            font-size: 10px;
             color: #a0aec0;
-            margin-top: 12px;
+            margin-top: 8px;
             font-style: italic;
         }
 
         .empty-message {
             text-align: center;
             color: #a0aec0;
-            padding: 60px 20px;
+            padding: 40px 20px;
             font-style: italic;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .filter-section {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
             border: 2px solid rgba(16, 185, 129, 0.2);
         }
 
         .filter-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 10px;
             align-items: flex-end;
         }
 
@@ -527,14 +527,14 @@
         }
 
         .btn-reset-filter {
-            padding: 12px 15px;
+            padding: 8px 12px;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 11px;
             width: 100%;
             transition: all 0.3s ease;
             text-transform: uppercase;
@@ -543,54 +543,54 @@
 
         .btn-reset-filter:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
         }
 
         .filter-count {
-            font-size: 14px;
+            font-size: 12px;
             color: #059669;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: center;
-            padding: 8px;
+            padding: 6px;
             background: rgba(16, 185, 129, 0.1);
-            border-radius: 8px;
+            border-radius: 6px;
         }
 
         .stats-card {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .stat-item {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            padding: 20px;
-            border-radius: 15px;
+            padding: 12px;
+            border-radius: 12px;
             text-align: center;
             color: white;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
             transition: all 0.3s ease;
         }
 
         .stat-item:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5);
         }
 
         .stat-value {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 800;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             display: block;
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 10px;
             opacity: 0.9;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         @media (max-width: 1200px) {
